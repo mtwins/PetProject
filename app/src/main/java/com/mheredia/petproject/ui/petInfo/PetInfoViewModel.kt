@@ -1,10 +1,10 @@
-package com.mheredia.petproject.ui.home
+package com.mheredia.petproject.ui.petInfo
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class HomeViewModel : ViewModel() {
+class PetInfoViewModel : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
         value = "This is home Fragment"
