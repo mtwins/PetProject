@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "654825666486",
+    "project_id": "petproject-38ba3",
+    "storage_bucket": "petproject-38ba3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:654825666486:android:73b51b708f0e704cf87317",
+        "android_client_info": {
+          "package_name": "com.mheredia.petproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "654825666486-oq2db2feg4sc8hi4vtf06jqd3adhk62n.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.mheredia.petproject",
+            "certificate_hash": "316316833b07b617ad3f1e10287abc31e1d6091e"
+          }
+        },
+        {
+          "client_id": "654825666486-crs0rjft55vkr61se2ks7v4c8079o985.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBG-pxwqLtOPY9jcn4oC--HWgkEkCw8894"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "654825666486-crs0rjft55vkr61se2ks7v4c8079o985.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
