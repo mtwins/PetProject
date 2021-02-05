@@ -1,53 +1,49 @@
 package com.mheredia.petproject.ui.login
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.textfield.TextInputEditText
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.mheredia.petproject.MainActivity
 import com.mheredia.petproject.R
+import com.mheredia.petproject.model.CallResult
 import com.mheredia.petproject.ui.Utils
 
 
 class LoginActivity : AppCompatActivity() {
-    private lateinit var password: TextInputEditText
-    private lateinit var email: TextInputEditText
-    private fun getEmailText(): String = email.text.toString()
-    private fun getPasswordText(): String = password.text.toString()
-    private val viewModel: LoginViewModel by viewModels()
 
+
+    private lateinit var viewModel: ViewModel
+
+    companion object {
+        fun getObserver(view: View, context: Context): Observer<CallResult> =
+            Observer { result ->
+                if (result.isSuccess) MainActivity.route(context)
+                else Utils().sendMessage(view, result.errorMessage)
+
+            }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-        val loginButton: Button = findViewById(R.id.login_button)
-        val registrationButton: Button = findViewById(R.id.registration_button)
-        email = findViewById(R.id.email_edit_text)
-        password = findViewById(R.id.password_edit_text)
-        loginButton.setOnClickListener { view -> loginUser(view) }
-        registrationButton.setOnClickListener { view -> registerUser(view)
-//            val fm: FragmentManager = supportFragmentManager
-//            val editNameDialogFragment =
-//                EditNameDialogFragment.newInstance()
-//            editNameDialogFragment.show(fm, "fragment_register")
-        }
+        val login: Fragment = LoginFragment()
+        startFragment(login)
+        viewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
+
     }
 
-    private fun registerUser(view: View) {
-        if (viewModel.isValidEmailAndPassword(getEmailText(), getPasswordText(), view)) {
-            viewModel.registerUser(getEmailText(), getPasswordText(), view, this)
-        } else {
-            Utils().sendSnackbarMessage(view, "Invalid email or password")
-        }
+    private fun startFragment(fr: Fragment) {
+        val fragmentTransaction: FragmentTransaction = supportFragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.fragment_place, fr)
+        fragmentTransaction.commit()
     }
 
-    private fun loginUser(view: View) {
-        if (viewModel.isValidEmailAndPassword(getEmailText(), getPasswordText(), view)) {
-            viewModel.emailSignIn(getEmailText(), getPasswordText(), view, this)
-        } else {
-            Utils().sendSnackbarMessage(view, "Invalid email or password")
-        }
-    }
+
 }
 
 

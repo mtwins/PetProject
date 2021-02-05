@@ -1,47 +1,57 @@
 package com.mheredia.petproject.ui.registration
 
+import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
+import android.widget.Button
 import android.widget.EditText
-import androidx.fragment.app.DialogFragment
 import com.mheredia.petproject.R
+import com.mheredia.petproject.ui.login.LoginActivity
 
+class RegistrationFragment : Fragment() {
 
-// ...
+    companion object {
+        fun newInstance() = RegistrationFragment()
+    }
+    private lateinit var email: EditText
+    private lateinit var confirmPassword: EditText
+    private lateinit var password: EditText
+    private lateinit var registrationButton: Button
+    private lateinit var viewModel: RegistrationViewModel
+    private fun getEmailText(): String = email.text.toString()
+    private fun getPasswordText(): String = password.text.toString()
+    private fun getConfirmPasswordText(): String = confirmPassword.text.toString()
 
-// ...
-class EditNameDialogFragment : DialogFragment() {
-    private var mEditText: EditText? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_registration, container)
+        return inflater.inflate(R.layout.fragment_registration, container, false)
     }
 
-    override fun onViewCreated(view: View,  savedInstanceState: Bundle?) {
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        viewModel = ViewModelProvider(this).get(RegistrationViewModel::class.java)
+        val observer = LoginActivity.getObserver(requireView(), requireContext())
+        viewModel.userRegistrationResult.observe(viewLifecycleOwner, observer)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Get field from view
-//        mEditText = view.findViewById(R.id.txt_your_name) as EditText
-        // Fetch arguments from bundle and set title
-//        val title = arguments!!.getString("title", "Enter Name")
-        dialog!!.setTitle("Register")
-        // Show soft keyboard automatically and request focus to field
-//        mEditText!!.requestFocus()
-        dialog!!.window!!.setSoftInputMode(
-            WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE
-        )
-    }
-
-    companion object {
-        fun newInstance(): EditNameDialogFragment {
-            val frag = EditNameDialogFragment()
-            val args = Bundle()
-            frag.arguments = args
-            return frag
+        registrationButton = view.findViewById(R.id.register_user_button)
+        password = view.findViewById(R.id.registration_password_edit_text)
+        confirmPassword = view.findViewById(R.id.registration_confirm_password_edit_text)
+        email = view.findViewById(R.id.registration_email_edit_text)
+        registrationButton.setOnClickListener { view ->
+            registerUser()
         }
     }
+
+    private fun registerUser() {
+        viewModel.registerUser(getEmailText(), getPasswordText(), getConfirmPasswordText())
+    }
+
 }

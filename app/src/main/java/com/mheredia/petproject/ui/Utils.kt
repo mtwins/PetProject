@@ -5,7 +5,7 @@ import com.google.android.material.snackbar.Snackbar
 
 class Utils {
 
-    public fun sendSnackbarMessage(view: View, message:String) {
+     fun sendMessage(view: View, message:String) {
         Snackbar.make(view, message, Snackbar.LENGTH_LONG)
             .setAction("Action", null).show()
     }
