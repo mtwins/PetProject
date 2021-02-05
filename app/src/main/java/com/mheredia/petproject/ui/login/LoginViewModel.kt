@@ -9,6 +9,7 @@ import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.mheredia.petproject.MainActivity
+import com.mheredia.petproject.ui.Utils
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.lang.Exception
@@ -20,11 +21,11 @@ class LoginViewModel : ViewModel() {
     fun emailSignIn(email: String, password: String, view: View, context: Context) {
         viewModelScope.launch {
             try {
-                auth.signInWithEmailAndPassword(email, password).await().run{
+                auth.signInWithEmailAndPassword(email, password).await()
                 MainActivity.route(context)
-                }
+
             } catch (ex: Exception) {
-                sendSnackbarMessage(view,ex.localizedMessage.toString())
+                Utils().sendSnackbarMessage(view, ex.localizedMessage.toString())
             }
 
         }
@@ -33,28 +34,18 @@ class LoginViewModel : ViewModel() {
     fun registerUser(email: String, password: String, view: View, context: Context) {
         viewModelScope.launch {
             try {
-               auth.createUserWithEmailAndPassword(email, password).await().run {
-                   MainActivity.route(context)
-               }
+                auth.createUserWithEmailAndPassword(email, password).await()
+                MainActivity.route(context)
+
             } catch (ex: Exception) {
-                sendSnackbarMessage(view,ex.localizedMessage.toString())
+                Utils().sendSnackbarMessage(view, ex.localizedMessage.toString())
             }
 
         }
     }
 
-
     fun isValidEmailAndPassword(emailText: String, passwordText: String, view: View): Boolean {
-        if (isRequiredFieldEmpty(emailText) || isRequiredFieldEmpty(passwordText)) {
-            return false
-        } else {
-            return true;
-        }
-    }
-
-    private fun sendSnackbarMessage(view: View, message:String) {
-        Snackbar.make(view, message, Snackbar.LENGTH_LONG)
-            .setAction("Action", null).show()
+        return !(isRequiredFieldEmpty(emailText) || isRequiredFieldEmpty(passwordText))
     }
 
     private fun isRequiredFieldEmpty(text: String): Boolean {
