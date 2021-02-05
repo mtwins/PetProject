@@ -1,47 +1,34 @@
 package com.mheredia.petproject.ui.registration
 
+import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
-import android.widget.EditText
-import androidx.fragment.app.DialogFragment
 import com.mheredia.petproject.R
+import com.mheredia.petproject.ui.registration.RegistrationViewModel
 
+class RegistrationFragment : Fragment() {
 
-// ...
+    companion object {
+        fun newInstance() = RegistrationFragment()
+    }
 
-// ...
-class EditNameDialogFragment : DialogFragment() {
-    private var mEditText: EditText? = null
+    private lateinit var viewModel: RegistrationViewModel
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_registration, container)
+        return inflater.inflate(R.layout.fragment_registration, container, false)
     }
 
-    override fun onViewCreated(view: View,  savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        // Get field from view
-//        mEditText = view.findViewById(R.id.txt_your_name) as EditText
-        // Fetch arguments from bundle and set title
-//        val title = arguments!!.getString("title", "Enter Name")
-        dialog!!.setTitle("Register")
-        // Show soft keyboard automatically and request focus to field
-//        mEditText!!.requestFocus()
-        dialog!!.window!!.setSoftInputMode(
-            WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE
-        )
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        viewModel = ViewModelProvider(this).get(RegistrationViewModel::class.java)
+
+        // TODO: Use the ViewModel
     }
 
-    companion object {
-        fun newInstance(): EditNameDialogFragment {
-            val frag = EditNameDialogFragment()
-            val args = Bundle()
-            frag.arguments = args
-            return frag
-        }
-    }
 }
