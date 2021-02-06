@@ -9,4 +9,6 @@ class Utils {
         Snackbar.make(view, message, Snackbar.LENGTH_LONG)
             .setAction("Action", null).show()
     }
+
+
 }

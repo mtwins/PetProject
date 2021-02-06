@@ -25,10 +25,7 @@ class RegistrationFragment : Fragment() {
     private fun getPasswordText(): String = password.text.toString()
     private fun getConfirmPasswordText(): String = confirmPassword.text.toString()
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_registration, container, false)
     }
 
@@ -45,9 +42,7 @@ class RegistrationFragment : Fragment() {
         password = view.findViewById(R.id.registration_password_edit_text)
         confirmPassword = view.findViewById(R.id.registration_confirm_password_edit_text)
         email = view.findViewById(R.id.registration_email_edit_text)
-        registrationButton.setOnClickListener { view ->
-            registerUser()
-        }
+        registrationButton.setOnClickListener { registerUser() }
     }
 
     private fun registerUser() {
