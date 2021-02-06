@@ -18,12 +18,14 @@ class ContactsFragment : Fragment() {
     private lateinit var contactsViewModel: ContactsViewModel
     private lateinit var fab: FloatingActionButton
 
+
     interface ContactInterface {
         fun addContactButtonClicked()
     }
 
     companion object {
         fun newInstance() = ContactsFragment()
+        lateinit var contactsAdapter: ContactsAdapter
     }
 
     override fun onResume() {
@@ -31,15 +33,19 @@ class ContactsFragment : Fragment() {
         contactsViewModel.getContacts()
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        contactsViewModel = ViewModelProvider(this).get(ContactsViewModel::class.java)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        contactsViewModel = ViewModelProvider(this).get(ContactsViewModel::class.java)
+
         val root = inflater.inflate(R.layout.fragment_contacts, container, false)
         contactsViewModel.getContacts()
-
         fab = root.findViewById(R.id.add_contacts)
         fab.setOnClickListener { view ->
             addNewContactNavigation()
@@ -48,14 +54,17 @@ class ContactsFragment : Fragment() {
         var contacts_list = root.findViewById<RecyclerView>(R.id.contacts_list)
         contacts_list.apply {
             layoutManager = LinearLayoutManager(activity)
-            adapter = ContactsAdapter(mutableListOf(),this.context)
+            adapter = ContactsAdapter(mutableListOf(), this.context)
         }
 
         contactsViewModel.contactInfo.observe(viewLifecycleOwner, Observer { result ->
+            contactsAdapter =
+                ContactsAdapter(result.toMutableList(), this@ContactsFragment.requireContext())
             contacts_list.apply {
                 layoutManager = LinearLayoutManager(activity)
-                adapter = ContactsAdapter(result, this@ContactsFragment.requireContext())
+                adapter = contactsAdapter
             }
+            contactsAdapter.notifyDataSetChanged()
 
         })
         return root

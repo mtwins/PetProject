@@ -20,6 +20,7 @@ class AddEditContactsFragment : Fragment() {
 
     private lateinit var contactsViewModel: ContactsViewModel
     private val db = Firebase.firestore
+
     companion object {
         fun newInstance() = AddEditContactsFragment()
     }
@@ -45,7 +46,7 @@ class AddEditContactsFragment : Fragment() {
                 "notes" to notes.text.toString(),
                 "userId" to Firebase.auth.currentUser?.uid.toString()
             )
-            addContactToDb(contact)
+            contactsViewModel.addContactToDb(contact, this.requireActivity())
 
         }
 
@@ -53,15 +54,6 @@ class AddEditContactsFragment : Fragment() {
     }
 
 
-    private fun addContactToDb(contact: HashMap<String, String>) {
-        var mCallback = activity as AddEditContactInterface
-        db.collection("contacts")
-            .add(contact)
-            .addOnSuccessListener {
-                mCallback.goToContacts()
-                Log.d("ContactDone", "DocumentSnapshot successfully written!")
-            }
-            .addOnFailureListener { e -> Log.w("ContactError", "Error writing document", e) }
-    }
+
 
 }

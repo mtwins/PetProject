@@ -14,8 +14,19 @@ import com.google.android.material.internal.ContextUtils.getActivity
 import com.mheredia.petproject.R
 import com.mheredia.petproject.data.model.Contact
 
-class ContactsAdapter(var result: List<Contact>, var context: Context) :
+class ContactsAdapter(var result: MutableList<Contact>, var context: Context) :
     RecyclerView.Adapter<ContactsAdapter.ViewHolder>() {
+
+    fun addContact(contact: Contact){
+        result.add(contact)
+        notifyDataSetChanged()
+    }
+
+    fun deleteContact(index: Int){
+        result.removeAt(index)
+        notifyDataSetChanged()
+    }
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val v = LayoutInflater.from(parent.context)

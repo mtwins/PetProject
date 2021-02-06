@@ -1,5 +1,7 @@
 package com.mheredia.petproject.ui.contacts
 
+import android.util.Log
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -28,6 +30,24 @@ class ContactsViewModel : ViewModel() {
             .get()
             .await()
             .toObjects(Contact::class.java)
+
+    fun addContactToDb(contact: HashMap<String, String>, activity: FragmentActivity) {
+        var mCallback = activity as AddEditContactsFragment.AddEditContactInterface
+        db.collection("contacts")
+            .add(contact)
+            .addOnSuccessListener {
+                mCallback.goToContacts()
+                ContactsFragment.contactsAdapter.addContact(Contact(
+                    contact.get("userId").toString(),
+                    contact.get("name").toString(),
+                    contact.get("phone").toString(),
+                    contact.get("email").toString(),
+                    contact.get("notes").toString()
+                ))
+                Log.d("ContactDone", "DocumentSnapshot successfully written!")
+            }
+            .addOnFailureListener { e -> Log.w("ContactError", "Error writing document", e) }
+    }
 
 
 }
