@@ -2,6 +2,7 @@ package com.mheredia.petproject
 
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
@@ -15,6 +16,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
+import com.mheredia.petproject.data.model.Contact
 import com.mheredia.petproject.ui.contacts.AddEditContactsFragment
 import com.mheredia.petproject.ui.contacts.ContactsFragment
 
@@ -61,15 +63,46 @@ class MainActivity : AppCompatActivity(), ContactsFragment.ContactInterface, Add
 
     override fun addContactButtonClicked() {
         val fragmentTransaction: FragmentTransaction = supportFragmentManager.beginTransaction()
+        getBundle(Contact())
         fragmentTransaction.add(R.id.nav_host_fragment, addEditFragment)
         fragmentTransaction.commit()
+    }
+
+    override fun openEmail(email: String) {
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.putExtra(Intent.EXTRA_EMAIL, email)
+        startActivity(Intent.createChooser(intent, "Send Email"))
+    }
+
+    override fun openPhone(phone: String) {
+        val intent = Intent(Intent.ACTION_DIAL)
+        intent.data = Uri.parse("tel:$phone")
+        startActivity(intent)
+    }
+
+    override fun editContactButtonClicked(contact: Contact) {
+        val fragmentTransaction: FragmentTransaction = supportFragmentManager.beginTransaction()
+        val bundle = getBundle(contact)
+        addEditFragment.setArguments(bundle)
+        fragmentTransaction.add(R.id.nav_host_fragment, addEditFragment)
+        fragmentTransaction.commit()
+    }
+
+    private fun getBundle(contact: Contact): Bundle {
+        val bundle = Bundle()
+        bundle.putString("name", contact.name)
+        bundle.putString("email", contact.email)
+        bundle.putString("phone", contact.phone)
+        bundle.putString("notes", contact.notes)
+        bundle.putString("userId", contact.userId)
+        bundle.putString("contactId", contact.contactId)
+        return bundle
     }
 
     override fun goToContacts() {
         val fragmentTransaction: FragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.remove( addEditFragment)
         fragmentTransaction.commit()
-//        supportFragmentManager.popBackStackImmediate()
 
     }
 

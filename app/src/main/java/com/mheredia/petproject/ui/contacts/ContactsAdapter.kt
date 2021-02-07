@@ -9,20 +9,39 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat.startActivity
+import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.internal.ContextUtils.getActivity
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.mheredia.petproject.R
 import com.mheredia.petproject.data.model.Contact
 
-class ContactsAdapter(var result: MutableList<Contact>, var context: Context) :
+class ContactsAdapter(
+    var result: MutableList<Contact>,
+    var context: Context,
+    var activity: FragmentActivity
+) :
     RecyclerView.Adapter<ContactsAdapter.ViewHolder>() {
 
-    fun addContact(contact: Contact){
+    fun addContact(contact: Contact) {
         result.add(contact)
         notifyDataSetChanged()
     }
 
-    fun deleteContact(index: Int){
+    fun editContact(contact: Contact) {
+        var position=0
+        for (item in result) {
+            if(item.contactId==contact.contactId){
+                result[position]=contact
+                break
+            }
+            position++
+        }
+        notifyDataSetChanged()
+    }
+
+    fun deleteContact(index: Int) {
         result.removeAt(index)
         notifyDataSetChanged()
     }
@@ -41,20 +60,12 @@ class ContactsAdapter(var result: MutableList<Contact>, var context: Context) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.title.text = result[position].name
         holder.subTitle.text = result[position].notes
+
         holder.emailImage.setOnClickListener {
-            val mIntent = Intent(Intent.ACTION_SEND).apply {
-                putExtra(Intent.EXTRA_EMAIL, result[position].email)
-                setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
-            startActivity(context, mIntent, null)
+            ContactsFragment.contactsViewModel.openEmail(activity,result[position].email )
         }
         holder.phoneImage.setOnClickListener {
-            val mIntent = Intent(Intent.ACTION_DIAL).apply {
-                setData(Uri.parse(result[position].phone))
-                setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
-            startActivity(context, mIntent,null )
-
+            ContactsFragment.contactsViewModel.openPhone(activity,result[position].phone )
 
         }
     }
@@ -75,21 +86,13 @@ class ContactsAdapter(var result: MutableList<Contact>, var context: Context) :
 
             itemView.setOnClickListener {
                 var position: Int = getAdapterPosition()
-                val context = itemView.context
-                val intent = Intent(context, AddEditContactsFragment::class.java).apply {
-                    putExtra("NAME", position)
-//                    putExtra("EMAIL", itemKode.text)
-//                    putExtra("PHONENUMBER", itemKategori.text)
-//                    putExtra("NOTES", itemIsi.text)
-//                    putExtra("USERID", itemIsi.text)
-                }
-//                var mCallback = getActivity(context) from ContactsFragment.ContactInterface.
-//                mCallback.addContactButtonClicked()
+                ContactsFragment.contactsViewModel.goToEditContactFragment(
+                    activity,
+                    result[position]
+                )
             }
         }
     }
-
-
 
 
 }

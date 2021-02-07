@@ -16,7 +16,6 @@ class ContactsViewModel : ViewModel() {
 
     val contactInfo = MutableLiveData<List<Contact>>()
     private val db = Firebase.firestore
-    private val contactsRef = db.collection("contacts")
 
     fun getContacts(){
         viewModelScope.launch {
@@ -31,23 +30,49 @@ class ContactsViewModel : ViewModel() {
             .await()
             .toObjects(Contact::class.java)
 
-    fun addContactToDb(contact: HashMap<String, String>, activity: FragmentActivity) {
+    fun addContactToDb( contact: Contact, activity: FragmentActivity) {
         var mCallback = activity as AddEditContactsFragment.AddEditContactInterface
-        db.collection("contacts")
-            .add(contact)
-            .addOnSuccessListener {
+        var contactsRef= db.collection("contacts").document()
+        contact.contactId=contactsRef.id
+        contactsRef
+            .set(contact)
+            .addOnSuccessListener { documentReference ->
                 mCallback.goToContacts()
-                ContactsFragment.contactsAdapter.addContact(Contact(
-                    contact.get("userId").toString(),
-                    contact.get("name").toString(),
-                    contact.get("phone").toString(),
-                    contact.get("email").toString(),
-                    contact.get("notes").toString()
-                ))
+                ContactsFragment.contactsAdapter.addContact(contact)
                 Log.d("ContactDone", "DocumentSnapshot successfully written!")
             }
             .addOnFailureListener { e -> Log.w("ContactError", "Error writing document", e) }
     }
+    fun updateContactToDb(contact: Contact, activity: FragmentActivity) {
+        var mCallback = activity as AddEditContactsFragment.AddEditContactInterface
+        var contactsRef= db.collection("contacts")
+        contactsRef
+            .document(contact.contactId)
+            .set(contact)
+            .addOnSuccessListener { documentReference ->
+                mCallback.goToContacts()
+                ContactsFragment.contactsAdapter.editContact(contact)
+                Log.d("ContactDone", "DocumentSnapshot successfully written!")
+            }
+            .addOnFailureListener { e -> Log.w("ContactError", "Error writing document", e) }
+    }
+    fun goToEditContactFragment(activity: FragmentActivity, contact: Contact) {
+        var mCallback = activity as ContactsFragment.ContactInterface
+        mCallback.editContactButtonClicked(contact)
+    }
 
+    fun addNewContactNavigation(activity: FragmentActivity) {
+        var mCallback = activity as ContactsFragment.ContactInterface
+        mCallback.addContactButtonClicked()
+    }
 
+    fun openEmail(activity: FragmentActivity, email: String) {
+        var mCallback = activity as ContactsFragment.ContactInterface
+        mCallback.openEmail(email)
+    }
+
+    fun openPhone(activity: FragmentActivity, phone:String) {
+        var mCallback = activity as ContactsFragment.ContactInterface
+        mCallback.openPhone(phone)
+    }
 }

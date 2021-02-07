@@ -11,20 +11,22 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mheredia.petproject.R
+import com.mheredia.petproject.data.model.Contact
 import com.mheredia.petproject.ui.login.LoginActivity
 
 class ContactsFragment : Fragment() {
 
-    private lateinit var contactsViewModel: ContactsViewModel
     private lateinit var fab: FloatingActionButton
-
-
     interface ContactInterface {
         fun addContactButtonClicked()
+        fun openEmail(email:String)
+        fun openPhone(phone:String)
+        fun editContactButtonClicked(contact:Contact)
     }
-
     companion object {
+
         fun newInstance() = ContactsFragment()
+        lateinit var contactsViewModel: ContactsViewModel
         lateinit var contactsAdapter: ContactsAdapter
     }
 
@@ -48,18 +50,18 @@ class ContactsFragment : Fragment() {
         contactsViewModel.getContacts()
         fab = root.findViewById(R.id.add_contacts)
         fab.setOnClickListener { view ->
-            addNewContactNavigation()
+            contactsViewModel.addNewContactNavigation(this.requireActivity())
         }
 
         var contacts_list = root.findViewById<RecyclerView>(R.id.contacts_list)
         contacts_list.apply {
             layoutManager = LinearLayoutManager(activity)
-            adapter = ContactsAdapter(mutableListOf(), this.context)
+            adapter = ContactsAdapter(mutableListOf(), this.context, this@ContactsFragment.requireActivity())
         }
 
         contactsViewModel.contactInfo.observe(viewLifecycleOwner, Observer { result ->
             contactsAdapter =
-                ContactsAdapter(result.toMutableList(), this@ContactsFragment.requireContext())
+                ContactsAdapter(result.toMutableList(), this@ContactsFragment.requireContext(), this.requireActivity())
             contacts_list.apply {
                 layoutManager = LinearLayoutManager(activity)
                 adapter = contactsAdapter
@@ -70,10 +72,7 @@ class ContactsFragment : Fragment() {
         return root
     }
 
-    private fun addNewContactNavigation() {
-        var mCallback = activity as ContactInterface
-        mCallback.addContactButtonClicked()
-    }
+
 
 
 }
