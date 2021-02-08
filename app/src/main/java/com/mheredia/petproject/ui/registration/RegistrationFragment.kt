@@ -19,11 +19,13 @@ class RegistrationFragment : Fragment() {
     private lateinit var email: EditText
     private lateinit var confirmPassword: EditText
     private lateinit var password: EditText
+    private lateinit var name: EditText
     private lateinit var registrationButton: Button
     private lateinit var viewModel: RegistrationViewModel
     private fun getEmailText(): String = email.text.toString()
     private fun getPasswordText(): String = password.text.toString()
     private fun getConfirmPasswordText(): String = confirmPassword.text.toString()
+    private fun getNameText(): String = name.text.toString()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_registration, container, false)
@@ -39,6 +41,7 @@ class RegistrationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         registrationButton = view.findViewById(R.id.register_user_button)
+        name = view.findViewById(R.id.name_edit_text)
         password = view.findViewById(R.id.registration_password_edit_text)
         confirmPassword = view.findViewById(R.id.registration_confirm_password_edit_text)
         email = view.findViewById(R.id.registration_email_edit_text)
@@ -46,7 +49,7 @@ class RegistrationFragment : Fragment() {
     }
 
     private fun registerUser() {
-        viewModel.registerUser(getEmailText(), getPasswordText(), getConfirmPasswordText())
+        viewModel.registerUser(getEmailText(), getPasswordText(), getConfirmPasswordText(), getNameText())
     }
 
 }

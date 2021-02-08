@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat.startActivity
@@ -16,6 +17,8 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.mheredia.petproject.data.model.Contact
 import com.mheredia.petproject.ui.contacts.AddEditContactsFragment
 import com.mheredia.petproject.ui.contacts.ContactsFragment
@@ -45,14 +48,22 @@ class MainActivity : AppCompatActivity(), ContactsFragment.ContactInterface, Add
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
         appBarConfiguration = AppBarConfiguration(setOf(
-                R.id.nav_pet_info, R.id.nav_gallery, R.id.nav_contact), drawerLayout)
+                R.id.nav_pet_info, R.id.nav_gallery, R.id.nav_contact, R.id.nav_reminders), drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         navView.bringToFront()
+
+
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
+        val headerTitle: TextView= findViewById(R.id.nav_header_title)
+        val headerSubtitle: TextView= findViewById(R.id.nav_header_subtitle)
+        val auth = Firebase.auth
+        headerTitle.text= auth.currentUser?.displayName
+        headerSubtitle.text= auth.currentUser?.email
         return true
     }
 

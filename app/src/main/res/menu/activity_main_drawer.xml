@@ -14,7 +14,12 @@
             android:title="@string/menu_gallery" />
         <item
             android:id="@+id/nav_contact"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/ic_baseline_contacts_24"
             android:title="@string/menu_contacts" />
+
+        <item
+            android:id="@+id/nav_reminders"
+            android:icon="@drawable/ic_baseline_reminder_24"
+            android:title="@string/reminders" />
     </group>
 </menu>
