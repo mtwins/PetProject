@@ -13,7 +13,7 @@ import kotlinx.coroutines.tasks.await
 
 class ReminderViewModel : ViewModel() {
     val reminderInfo = MutableLiveData<List<Reminder>>()
-    lateinit var adapter: ReminderAdapter
+    lateinit var reminderAdapter: ReminderAdapter
     private val db = Firebase.firestore
 
     fun getReminders() {
@@ -41,7 +41,7 @@ class ReminderViewModel : ViewModel() {
     private fun editToDb(reminder: Reminder) {
         db.collection("reminders").document(reminder.reminderId).set(reminder)
             .addOnSuccessListener { documentReference ->
-                adapter.editContact(reminder)
+                reminderAdapter.editContact(reminder)
             }
             .addOnFailureListener { e -> Log.w("ContactError", "Error writing document", e) }
     }
@@ -52,9 +52,19 @@ class ReminderViewModel : ViewModel() {
         reminderRef
             .set(reminder)
             .addOnSuccessListener { documentReference ->
-                adapter.addReminder(reminder)
+                reminderAdapter.addReminder(reminder)
             }
             .addOnFailureListener { e -> Log.w("ContactError", "Error writing document", e) }
+    }
+
+     fun deleteToDb(position: Int){
+        var reminder= reminderAdapter.result[position]
+        Firebase.firestore.collection("reminders")
+            .document(reminder.reminderId)
+            .delete()
+            .addOnSuccessListener {
+                reminderAdapter.deleteReminder(position)
+            }
     }
 
 }

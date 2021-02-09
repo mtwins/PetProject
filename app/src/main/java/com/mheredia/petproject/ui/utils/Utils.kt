@@ -1,4 +1,4 @@
-package com.mheredia.petproject.ui
+package com.mheredia.petproject.ui.utils
 
 import android.view.View
 import com.google.android.material.snackbar.Snackbar

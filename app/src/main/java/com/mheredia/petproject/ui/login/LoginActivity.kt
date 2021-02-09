@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.mheredia.petproject.MainActivity
 import com.mheredia.petproject.R
 import com.mheredia.petproject.model.CallResult
-import com.mheredia.petproject.ui.Utils
+import com.mheredia.petproject.ui.utils.Utils
 
 
 class LoginActivity : AppCompatActivity() {
@@ -24,7 +24,8 @@ class LoginActivity : AppCompatActivity() {
         fun getObserver(view: View, context: Context): Observer<CallResult> =
             Observer { result ->
                 if (result.isSuccess) MainActivity.route(context)
-                else Utils().sendMessage(view, result.errorMessage)
+                else Utils()
+                    .sendMessage(view, result.errorMessage)
 
             }
     }

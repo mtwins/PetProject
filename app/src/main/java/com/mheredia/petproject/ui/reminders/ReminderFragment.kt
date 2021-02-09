@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mheredia.petproject.R
 import com.mheredia.petproject.data.model.Reminder
+import com.mheredia.petproject.ui.utils.SwipeToDeleteCallback
 
 
 class ReminderFragment : Fragment() {
@@ -29,36 +30,27 @@ class ReminderFragment : Fragment() {
     ): View? {
 
         reminderViewModel = ViewModelProvider(this).get(ReminderViewModel::class.java)
-
         val root = inflater.inflate(R.layout.fragment_reminders, container, false)
         reminderViewModel.getReminders()
-        var reminderList = root.findViewById<RecyclerView>(R.id.reminders_list)
+        val reminderList = root.findViewById<RecyclerView>(R.id.reminders_list)
         reminderViewModel.reminderInfo.observe(viewLifecycleOwner, Observer { result ->
-            reminderViewModel.adapter= ReminderAdapter(result.toMutableList(), ::openReminderDialog)
+            reminderViewModel.reminderAdapter= ReminderAdapter(result.toMutableList(), ::openReminderDialog)
             reminderList.apply {
                 layoutManager = LinearLayoutManager(activity)
-                adapter = reminderViewModel.adapter
+                adapter = reminderViewModel.reminderAdapter
             }
-            val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallbackReminder(reminderViewModel.adapter))
+            val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallback(reminderViewModel::deleteToDb))
             itemTouchHelper.attachToRecyclerView(reminderList)
-
-
-
         })
-
         return root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
         val button: FloatingActionButton = view.findViewById(R.id.add_reminders)
         button.setOnClickListener {
             openReminderDialog()
         }
-
-
     }
 
     private fun openReminderDialog(

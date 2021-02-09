@@ -5,10 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.mheredia.petproject.R
 import com.mheredia.petproject.data.model.Reminder
@@ -88,27 +86,3 @@ class ReminderAdapter(
 }
 
 
-class SwipeToDeleteCallbackReminder(var reminderAdapter: ReminderAdapter) :
-    ItemTouchHelper.SimpleCallback(ItemTouchHelper.LEFT, ItemTouchHelper.LEFT) {
-    override fun onMove(
-        recyclerView: RecyclerView,
-        viewHolder: RecyclerView.ViewHolder,
-        target: RecyclerView.ViewHolder
-    ): Boolean {
-        return true;
-    }
-
-    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        if (direction == ItemTouchHelper.LEFT || direction == ItemTouchHelper.RIGHT) {
-            val position = viewHolder.adapterPosition
-            var reminder= reminderAdapter.result[position]
-            Firebase.firestore.collection("reminders")
-                .document(reminder.reminderId)
-                .delete()
-                .addOnSuccessListener {
-                    reminderAdapter.deleteReminder(position)
-                }
-        }
-    }
-
-}
