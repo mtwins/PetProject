@@ -37,7 +37,7 @@ class ReminderFragment : Fragment() {
                 layoutManager = LinearLayoutManager(activity)
                 adapter = reminderViewModel.adapter
             }
-            reminderViewModel.adapter.notifyDataSetChanged()
+
 
         })
 
@@ -60,7 +60,7 @@ class ReminderFragment : Fragment() {
         reminder: Reminder = Reminder()
     ) {
         activity?.supportFragmentManager?.let {
-            ReminderDialogFragment(reminder).show(it, "")
+            ReminderDialogFragment(reminder, reminderViewModel).show(it, "")
         }
     }
 

@@ -6,12 +6,10 @@ import android.app.Dialog
 import android.app.TimePickerDialog
 import android.content.DialogInterface
 import android.os.Bundle
-import android.util.Log
 import android.widget.DatePicker
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.mheredia.petproject.R
 import com.mheredia.petproject.data.model.Reminder
@@ -19,9 +17,12 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-class ReminderDialogFragment(var reminder: Reminder) :
+class ReminderDialogFragment(
+    var reminder: Reminder,
+   var  reminderViewModel: ReminderViewModel
+) :
     DialogFragment() {
-    private val db = Firebase.firestore
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
         return activity?.let {
@@ -52,7 +53,7 @@ class ReminderDialogFragment(var reminder: Reminder) :
                     reminder.date=dateTextBox.text.toString()
                     reminder.time=timeTextBox.text.toString()
                     reminder.userId=Firebase.auth.currentUser?.uid.toString()
-                    writeReminderToDb(reminder)
+                    reminderViewModel.writeReminderToDb(reminder)
                 }
                 .setNegativeButton("Cancel",
                     DialogInterface.OnClickListener { dialog, id ->
@@ -90,26 +91,7 @@ class ReminderDialogFragment(var reminder: Reminder) :
         }
     }
 
-    private fun writeReminderToDb(reminder: Reminder) {
 
-        if (reminder.reminderId.isBlank()) {
-            var reminderRef = db.collection("reminders").document()
-            reminder.reminderId = reminderRef.id
-            reminderRef
-                .set(reminder)
-                .addOnSuccessListener { documentReference ->
-                    Log.d("ContactDone", "DocumentSnapshot successfully written!")
-
-                }
-                .addOnFailureListener { e -> Log.w("ContactError", "Error writing document", e) }
-        } else {
-            db.collection("reminders").document(reminder.reminderId).set(reminder)
-                .addOnSuccessListener { documentReference ->
-                    Log.d("ContactDone", "DocumentSnapshot successfully written!")
-                }
-                .addOnFailureListener { e -> Log.w("ContactError", "Error writing document", e) }
-        }
-    }
 
 
 }
