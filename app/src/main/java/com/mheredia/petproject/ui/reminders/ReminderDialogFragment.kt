@@ -6,59 +6,56 @@ import android.app.Dialog
 import android.app.TimePickerDialog
 import android.content.DialogInterface
 import android.os.Bundle
-import android.widget.Button
+import android.util.Log
 import android.widget.DatePicker
-import android.widget.EditText
+import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import com.mheredia.petproject.R
+import com.mheredia.petproject.data.model.Reminder
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-class ReminderDialogFragment : DialogFragment() {
+class ReminderDialogFragment(var reminder: Reminder) :
+    DialogFragment() {
+    private val db = Firebase.firestore
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+
         return activity?.let {
             val builder = AlertDialog.Builder(it)
-            // Get the layout inflater
             val inflater = requireActivity().layoutInflater;
-
-            // Inflate and set the layout for the dialog
-            // Pass null as the parent view because its going in the dialog layout
-
-
             val view = inflater.inflate(R.layout.dialog_reminder, null)
-            val time: EditText = view.findViewById(R.id.reminder_time)
-            val date: EditText = view.findViewById(R.id.reminder_date)
-            val datePickerButton: Button = view.findViewById(R.id.reminder_date_picker)
-            val timePickerButton: Button = view.findViewById(R.id.reminder_time_picker)
 
-            datePickerButton.setOnClickListener {
-                var datePickerDialog = DatePickerDialog(this.requireContext())
+            val nameTextBox: TextView = view.findViewById(R.id.reminder_name)
+            val dateTextBox: TextView = view.findViewById(R.id.reminder_date)
+            val timeTextBox: TextView = view.findViewById(R.id.reminder_time)
 
-                datePickerDialog.setOnDateSetListener { datePicker: DatePicker, year: Int, month: Int, day: Int ->
-                    date.setText( "$month/$day/$year")
-                }
-                datePickerDialog.show()
+            var title = "Add Reminder"
+            if (reminder.reminderId.isNotBlank()) {
+                title = "Edit Reminder"
+                nameTextBox.setText(reminder.name)
+                dateTextBox.setText(reminder.date)
+                timeTextBox.setText(reminder.time)
             }
-            timePickerButton.setOnClickListener {
-                val timeSetListener =
-                    TimePickerDialog.OnTimeSetListener { timePicker, hour, minute ->
-                        val cal = Calendar.getInstance()
-                        cal.set(Calendar.HOUR_OF_DAY, hour)
-                        cal.set(Calendar.MINUTE, minute)
-                        time.setText( SimpleDateFormat("HH:mm a").format(cal.time).toString())
-                    }
-                    TimePickerDialog(this.requireContext(), timeSetListener, 0, 0, false).show()
-            }
+            setDateTextOnClickListener(dateTextBox)
+            setTimeTextOnClickListener(timeTextBox)
 
             builder.setView(view)
-                .setTitle("Add Reminder")
-                // Add action buttons
-                .setPositiveButton("Save",
-                    DialogInterface.OnClickListener { dialog, id ->
-
-                    })
-
+                .setTitle(title)
+                .setPositiveButton(
+                    "Save"
+                ) { dialog, id ->
+                    val reminder = Reminder(
+                        nameTextBox.text.toString(),
+                        dateTextBox.text.toString(),
+                        timeTextBox.text.toString(),
+                        userId = Firebase.auth.currentUser?.uid.toString()
+                    )
+                    writeReminderToDb(reminder)
+                }
                 .setNegativeButton("Cancel",
                     DialogInterface.OnClickListener { dialog, id ->
                         getDialog()?.cancel()
@@ -71,7 +68,50 @@ class ReminderDialogFragment : DialogFragment() {
         } ?: throw IllegalStateException("Activity cannot be null")
     }
 
-    fun timePicker() {
+    private fun setDateTextOnClickListener(dateTextBox: TextView) {
+        dateTextBox.setOnClickListener {
+            var datePickerDialog = DatePickerDialog(this.requireContext())
 
+            datePickerDialog.setOnDateSetListener { datePicker: DatePicker, year: Int, month: Int, day: Int ->
+                dateTextBox.setText("$month/$day/$year")
+            }
+            datePickerDialog.show()
+        }
     }
+
+    private fun setTimeTextOnClickListener(timeTextBox: TextView) {
+        timeTextBox.setOnClickListener {
+            val timeSetListener =
+                TimePickerDialog.OnTimeSetListener { timePicker, hour, minute ->
+                    val cal = Calendar.getInstance()
+                    cal.set(Calendar.HOUR_OF_DAY, hour)
+                    cal.set(Calendar.MINUTE, minute)
+                    timeTextBox.setText(SimpleDateFormat("HH:mm a").format(cal.time).toString())
+                }
+            TimePickerDialog(this.requireContext(), timeSetListener, 0, 0, false).show()
+        }
+    }
+
+    private fun writeReminderToDb(reminder: Reminder) {
+
+        if (reminder.reminderId.isBlank()) {
+            var reminderRef = db.collection("reminders").document()
+            reminder.reminderId = reminderRef.id
+            reminderRef
+                .set(reminder)
+                .addOnSuccessListener { documentReference ->
+                    Log.d("ContactDone", "DocumentSnapshot successfully written!")
+                    
+                }
+                .addOnFailureListener { e -> Log.w("ContactError", "Error writing document", e) }
+        } else {
+            db.collection("reminders").document(reminder.reminderId).set(reminder)
+                .addOnSuccessListener { documentReference ->
+                    Log.d("ContactDone", "DocumentSnapshot successfully written!")
+                }
+                .addOnFailureListener { e -> Log.w("ContactError", "Error writing document", e) }
+        }
+    }
+
+
 }
