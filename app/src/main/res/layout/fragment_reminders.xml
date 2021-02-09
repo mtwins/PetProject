@@ -4,23 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/contact_fragment"
-    tools:context=".ui.contacts.ContactsFragment">
+    android:id="@+id/reminders_fragment"
+    tools:context=".ui.reminders.ReminderFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/contacts_list_container"
+        android:id="@+id/reminders_list_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/contacts_list"
+            android:id="@+id/reminders_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/add_contacts"
+        android:id="@+id/add_reminders"
         android:layout_width="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

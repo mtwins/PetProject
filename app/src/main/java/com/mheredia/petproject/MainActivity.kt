@@ -26,7 +26,7 @@ import com.mheredia.petproject.ui.contacts.ContactsFragment
 class MainActivity : AppCompatActivity(), ContactsFragment.ContactInterface, AddEditContactsFragment.AddEditContactInterface {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
-    val addEditFragment = AddEditContactsFragment.newInstance()
+
 
     companion object {
         fun route(context: Context) {
@@ -59,12 +59,16 @@ class MainActivity : AppCompatActivity(), ContactsFragment.ContactInterface, Add
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
-        val headerTitle: TextView= findViewById(R.id.nav_header_title)
-        val headerSubtitle: TextView= findViewById(R.id.nav_header_subtitle)
-        val auth = Firebase.auth
-        headerTitle.text= auth.currentUser?.displayName
-        headerSubtitle.text= auth.currentUser?.email
+        setUpHeader()
         return true
+    }
+
+    private fun setUpHeader() {
+        val headerTitle: TextView = findViewById(R.id.nav_header_title)
+        val headerSubtitle: TextView = findViewById(R.id.nav_header_subtitle)
+        val auth = Firebase.auth
+        headerTitle.text = auth.currentUser?.displayName
+        headerSubtitle.text = auth.currentUser?.email
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -73,9 +77,10 @@ class MainActivity : AppCompatActivity(), ContactsFragment.ContactInterface, Add
     }
 
     override fun addContactButtonClicked() {
+        val addEditFragment = AddEditContactsFragment.newInstance()
         val fragmentTransaction: FragmentTransaction = supportFragmentManager.beginTransaction()
         getBundle(Contact())
-        fragmentTransaction.add(R.id.nav_host_fragment, addEditFragment)
+        fragmentTransaction.add(R.id.top_parent, addEditFragment).addToBackStack(null)
         fragmentTransaction.commit()
     }
 
@@ -85,6 +90,11 @@ class MainActivity : AppCompatActivity(), ContactsFragment.ContactInterface, Add
         startActivity(Intent.createChooser(intent, "Send Email"))
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        supportFragmentManager.popBackStack()
+    }
+
     override fun openPhone(phone: String) {
         val intent = Intent(Intent.ACTION_DIAL)
         intent.data = Uri.parse("tel:$phone")
@@ -92,10 +102,11 @@ class MainActivity : AppCompatActivity(), ContactsFragment.ContactInterface, Add
     }
 
     override fun editContactButtonClicked(contact: Contact) {
+        val addEditFragment = AddEditContactsFragment.newInstance()
         val fragmentTransaction: FragmentTransaction = supportFragmentManager.beginTransaction()
         val bundle = getBundle(contact)
         addEditFragment.setArguments(bundle)
-        fragmentTransaction.add(R.id.nav_host_fragment, addEditFragment)
+        fragmentTransaction.add(R.id.top_parent, addEditFragment).addToBackStack(null)
         fragmentTransaction.commit()
     }
 
@@ -112,9 +123,7 @@ class MainActivity : AppCompatActivity(), ContactsFragment.ContactInterface, Add
 
     override fun goToContacts() {
         val fragmentTransaction: FragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.remove( addEditFragment)
         fragmentTransaction.commit()
-
     }
 
 }

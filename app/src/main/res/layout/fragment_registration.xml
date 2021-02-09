@@ -53,6 +53,7 @@
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/registration_password_textbox"
             android:layout_width="200dp"
+            android:inputType="textPassword"
             android:layout_height="wrap_content"
             android:layout_below="@+id/registration_email_textbox"
             android:layout_centerHorizontal="true"

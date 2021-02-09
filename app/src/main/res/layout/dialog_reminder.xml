@@ -1,0 +1,47 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+    <EditText
+        android:id="@+id/reminder_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="4dp"
+        android:hint="Reminder Name" />
+    <EditText
+        android:id="@+id/reminder_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:focusable="true"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="16dp"
+        android:fontFamily="sans-serif"
+        android:hint="Reminder Date"/>
+    <Button
+        android:id="@+id/reminder_date_picker"
+        android:layout_width="wrap_content"
+        android:text="Pick Date"
+        android:layout_height="wrap_content"></Button>
+
+    <EditText
+        android:id="@+id/reminder_time"
+        android:focusable="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="16dp"
+        android:fontFamily="sans-serif"
+        android:hint="Reminder Time"/>
+    <Button
+        android:id="@+id/reminder_time_picker"
+        android:layout_width="wrap_content"
+        android:text="Pick Time"
+        android:layout_height="wrap_content"></Button>
+</LinearLayout>

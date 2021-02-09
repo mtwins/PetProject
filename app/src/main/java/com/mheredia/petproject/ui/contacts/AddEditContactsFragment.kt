@@ -39,10 +39,10 @@ class AddEditContactsFragment : Fragment() {
         val notes: EditText = root.findViewById(R.id.contact_notes_edit_text)
         val submitButton: Button = root.findViewById(R.id.add_contact_button)
         val bundle = arguments
-        name.setText(bundle?.getString("name"))
-        email.setText(bundle?.getString("email"))
-        phoneNumber.setText(bundle?.getString("phone"))
-        notes.setText(bundle?.getString("notes"))
+        name.setText(bundle?.getString("name").orEmpty())
+        email.setText(bundle?.getString("email").orEmpty())
+        phoneNumber.setText(bundle?.getString("phone").orEmpty())
+        notes.setText(bundle?.getString("notes").orEmpty())
 
         submitButton.setOnClickListener {
             val contactId = bundle?.getString("contactId").toString()
