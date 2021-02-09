@@ -1,17 +1,19 @@
 package com.mheredia.petproject.ui.reminders
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mheredia.petproject.R
 import com.mheredia.petproject.data.model.Reminder
+
 
 class ReminderFragment : Fragment() {
 
@@ -37,6 +39,9 @@ class ReminderFragment : Fragment() {
                 layoutManager = LinearLayoutManager(activity)
                 adapter = reminderViewModel.adapter
             }
+            val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallbackReminder(reminderViewModel.adapter))
+            itemTouchHelper.attachToRecyclerView(reminderList)
+
 
 
         })

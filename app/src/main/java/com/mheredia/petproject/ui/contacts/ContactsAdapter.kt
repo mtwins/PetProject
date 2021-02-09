@@ -11,11 +11,15 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat.startActivity
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.mheredia.petproject.R
 import com.mheredia.petproject.data.model.Contact
+import com.mheredia.petproject.ui.reminders.ReminderAdapter
+import kotlinx.coroutines.tasks.await
 
 class ContactsAdapter(
     var result: MutableList<Contact>,
@@ -94,5 +98,32 @@ class ContactsAdapter(
         }
     }
 
+
+}
+
+
+
+class SwipeToDeleteCallbackContact(var contactsAdapter: ContactsAdapter) :
+    ItemTouchHelper.SimpleCallback(ItemTouchHelper.LEFT, ItemTouchHelper.LEFT) {
+    override fun onMove(
+        recyclerView: RecyclerView,
+        viewHolder: RecyclerView.ViewHolder,
+        target: RecyclerView.ViewHolder
+    ): Boolean {
+        return true;
+    }
+
+    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+        if (direction == ItemTouchHelper.LEFT || direction == ItemTouchHelper.RIGHT) {
+            val position = viewHolder.adapterPosition
+            var contact= contactsAdapter.result[position]
+            Firebase.firestore.collection("reminders")
+                .document(contact.contactId)
+                .delete()
+                .addOnSuccessListener {
+                contactsAdapter.deleteContact(position)
+            }
+        }
+    }
 
 }

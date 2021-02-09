@@ -7,12 +7,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mheredia.petproject.R
 import com.mheredia.petproject.data.model.Contact
-import com.mheredia.petproject.ui.login.LoginActivity
 
 class ContactsFragment : Fragment() {
 
@@ -59,6 +59,7 @@ class ContactsFragment : Fragment() {
             adapter = ContactsAdapter(mutableListOf(), this.context, this@ContactsFragment.requireActivity())
         }
 
+
         contactsViewModel.contactInfo.observe(viewLifecycleOwner, Observer { result ->
             contactsAdapter =
                 ContactsAdapter(result.toMutableList(), this@ContactsFragment.requireContext(), this.requireActivity())
@@ -66,8 +67,8 @@ class ContactsFragment : Fragment() {
                 layoutManager = LinearLayoutManager(activity)
                 adapter = contactsAdapter
             }
-            contactsAdapter.notifyDataSetChanged()
-
+            val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallbackContact(contactsAdapter))
+            itemTouchHelper.attachToRecyclerView(contacts_list)
         })
         return root
     }
