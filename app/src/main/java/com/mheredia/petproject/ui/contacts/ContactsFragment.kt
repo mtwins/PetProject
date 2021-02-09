@@ -13,22 +13,27 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mheredia.petproject.R
 import com.mheredia.petproject.data.model.Contact
+import com.mheredia.petproject.data.model.Reminder
+import com.mheredia.petproject.ui.reminders.ReminderDialogFragment
+import com.mheredia.petproject.ui.utils.SwipeToDeleteCallback
 
 class ContactsFragment : Fragment() {
 
     private lateinit var fab: FloatingActionButton
+
     interface ContactInterface {
-        fun addContactButtonClicked()
-        fun openEmail(email:String)
-        fun openPhone(phone:String)
-        fun editContactButtonClicked(contact:Contact)
+
+        fun openEmail(email: String)
+        fun openPhone(phone: String)
+
     }
+
     companion object {
 
         fun newInstance() = ContactsFragment()
-        lateinit var contactsViewModel: ContactsViewModel
-        lateinit var contactsAdapter: ContactsAdapter
     }
+
+    lateinit var contactsViewModel: ContactsViewModel
 
     override fun onResume() {
         super.onResume()
@@ -50,30 +55,41 @@ class ContactsFragment : Fragment() {
         contactsViewModel.getContacts()
         fab = root.findViewById(R.id.add_contacts)
         fab.setOnClickListener { view ->
-            contactsViewModel.addNewContactNavigation(this.requireActivity())
+            openContactDialog()
         }
 
         var contacts_list = root.findViewById<RecyclerView>(R.id.contacts_list)
-        contacts_list.apply {
-            layoutManager = LinearLayoutManager(activity)
-            adapter = ContactsAdapter(mutableListOf(), this.context, this@ContactsFragment.requireActivity())
-        }
-
-
         contactsViewModel.contactInfo.observe(viewLifecycleOwner, Observer { result ->
-            contactsAdapter =
-                ContactsAdapter(result.toMutableList(), this@ContactsFragment.requireContext(), this.requireActivity())
+            contactsViewModel.contactsAdapter =
+                ContactsAdapter(
+                    result.toMutableList(),
+                    ::openEmail,
+                    ::openPhone,
+                    ::openContactDialog
+                )
             contacts_list.apply {
                 layoutManager = LinearLayoutManager(activity)
-                adapter = contactsAdapter
+                adapter = contactsViewModel.contactsAdapter
             }
-            val itemTouchHelper = ItemTouchHelper(SwipeToDeleteCallbackContact(contactsAdapter))
+            val itemTouchHelper =
+                ItemTouchHelper(SwipeToDeleteCallback(contactsViewModel::deleteContactFromDb))
             itemTouchHelper.attachToRecyclerView(contacts_list)
         })
         return root
     }
 
+    private fun openContactDialog(contact: Contact = Contact() ){
+        activity?.supportFragmentManager?.let {
+            ContactDialogFragment(contact, contactsViewModel).show(it, "")
+        }
+    }
 
+    private fun openEmail(email:String ){
+        contactsViewModel.openEmail(this.requireActivity(),email )
+    }
+    private fun openPhone(phone:String){
+        contactsViewModel.openPhone(this.requireActivity(),phone )
+    }
 
 
 }

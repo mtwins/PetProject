@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 class ContactsViewModel : ViewModel() {
-
+    lateinit var contactsAdapter: ContactsAdapter
     val contactInfo = MutableLiveData<List<Contact>>()
     private val db = Firebase.firestore
 
@@ -30,41 +30,29 @@ class ContactsViewModel : ViewModel() {
             .await()
             .toObjects(Contact::class.java)
 
-    fun addContactToDb( contact: Contact, activity: FragmentActivity) {
-        var mCallback = activity as AddEditContactsFragment.AddEditContactInterface
+    fun addContactToDb( contact: Contact) {
         var contactsRef= db.collection("contacts").document()
         contact.contactId=contactsRef.id
         contactsRef
             .set(contact)
             .addOnSuccessListener { documentReference ->
-                mCallback.goToContacts()
-                ContactsFragment.contactsAdapter.addContact(contact)
+                contactsAdapter.addContact(contact)
                 Log.d("ContactDone", "DocumentSnapshot successfully written!")
             }
             .addOnFailureListener { e -> Log.w("ContactError", "Error writing document", e) }
     }
-    fun updateContactToDb(contact: Contact, activity: FragmentActivity) {
-        var mCallback = activity as AddEditContactsFragment.AddEditContactInterface
+    fun updateContactToDb(contact: Contact) {
         var contactsRef= db.collection("contacts")
         contactsRef
             .document(contact.contactId)
             .set(contact)
             .addOnSuccessListener { documentReference ->
-                mCallback.goToContacts()
-                ContactsFragment.contactsAdapter.editContact(contact)
+                contactsAdapter.editContact(contact)
                 Log.d("ContactDone", "DocumentSnapshot successfully written!")
             }
             .addOnFailureListener { e -> Log.w("ContactError", "Error writing document", e) }
     }
-    fun goToEditContactFragment(activity: FragmentActivity, contact: Contact) {
-        var mCallback = activity as ContactsFragment.ContactInterface
-        mCallback.editContactButtonClicked(contact)
-    }
 
-    fun addNewContactNavigation(activity: FragmentActivity) {
-        var mCallback = activity as ContactsFragment.ContactInterface
-        mCallback.addContactButtonClicked()
-    }
 
     fun openEmail(activity: FragmentActivity, email: String) {
         var mCallback = activity as ContactsFragment.ContactInterface
@@ -74,5 +62,22 @@ class ContactsViewModel : ViewModel() {
     fun openPhone(activity: FragmentActivity, phone:String) {
         var mCallback = activity as ContactsFragment.ContactInterface
         mCallback.openPhone(phone)
+    }
+
+    fun writeContactToDb(contact: Contact) {
+        if (contact.contactId.isBlank()) {
+            addContactToDb(contact)
+        } else {
+            updateContactToDb(contact)
+        }
+    }
+    fun deleteContactFromDb(position: Int){
+        var contact= contactsAdapter.result[position]
+        Firebase.firestore.collection("contacts")
+            .document(contact.contactId)
+            .delete()
+            .addOnSuccessListener {
+                contactsAdapter.deleteContact(position)
+            }
     }
 }

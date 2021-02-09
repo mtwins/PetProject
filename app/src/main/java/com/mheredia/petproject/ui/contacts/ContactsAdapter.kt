@@ -18,13 +18,15 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.mheredia.petproject.R
 import com.mheredia.petproject.data.model.Contact
+import com.mheredia.petproject.data.model.Reminder
 import com.mheredia.petproject.ui.reminders.ReminderAdapter
 import kotlinx.coroutines.tasks.await
 
 class ContactsAdapter(
     var result: MutableList<Contact>,
-    var context: Context,
-    var activity: FragmentActivity
+    var openEmail:  (email: String) -> Unit,
+    var openPhone:  (phone: String) -> Unit,
+    var openDialog: (contact: Contact) -> Unit
 ) :
     RecyclerView.Adapter<ContactsAdapter.ViewHolder>() {
 
@@ -66,11 +68,10 @@ class ContactsAdapter(
         holder.subTitle.text = result[position].notes
 
         holder.emailImage.setOnClickListener {
-            ContactsFragment.contactsViewModel.openEmail(activity,result[position].email )
+            openEmail(result[position].email )
         }
         holder.phoneImage.setOnClickListener {
-            ContactsFragment.contactsViewModel.openPhone(activity,result[position].phone )
-
+            openPhone(result[position].phone )
         }
     }
 
@@ -90,10 +91,15 @@ class ContactsAdapter(
 
             itemView.setOnClickListener {
                 var position: Int = getAdapterPosition()
-                ContactsFragment.contactsViewModel.goToEditContactFragment(
-                    activity,
-                    result[position]
+                val contact = Contact(
+                    Firebase.auth.currentUser?.uid.toString(),
+                    result[position].name,
+                    result[position].phone,
+                    result[position].email,
+                    result[position].notes,
+                    result[position].contactId
                 )
+                openDialog(contact)
             }
         }
     }
@@ -103,27 +109,3 @@ class ContactsAdapter(
 
 
 
-class SwipeToDeleteCallbackContact(var contactsAdapter: ContactsAdapter) :
-    ItemTouchHelper.SimpleCallback(ItemTouchHelper.LEFT, ItemTouchHelper.LEFT) {
-    override fun onMove(
-        recyclerView: RecyclerView,
-        viewHolder: RecyclerView.ViewHolder,
-        target: RecyclerView.ViewHolder
-    ): Boolean {
-        return true;
-    }
-
-    override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-        if (direction == ItemTouchHelper.LEFT || direction == ItemTouchHelper.RIGHT) {
-            val position = viewHolder.adapterPosition
-            var contact= contactsAdapter.result[position]
-            Firebase.firestore.collection("reminders")
-                .document(contact.contactId)
-                .delete()
-                .addOnSuccessListener {
-                contactsAdapter.deleteContact(position)
-            }
-        }
-    }
-
-}

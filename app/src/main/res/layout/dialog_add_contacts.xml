@@ -86,14 +86,6 @@
         </com.google.android.material.textfield.TextInputLayout>
 
 
-        <Button
-            android:id="@+id/add_contact_button"
-            style="@style/Widget.MaterialComponents.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/contact_notes"
-            android:layout_centerHorizontal="true"
-            android:text="@string/submit" />
     </RelativeLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

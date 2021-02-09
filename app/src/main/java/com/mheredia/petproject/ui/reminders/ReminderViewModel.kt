@@ -30,7 +30,6 @@ class ReminderViewModel : ViewModel() {
 
 
     fun writeReminderToDb(reminder: Reminder) {
-
         if (reminder.reminderId.isBlank()) {
             addToDb(reminder)
         } else {

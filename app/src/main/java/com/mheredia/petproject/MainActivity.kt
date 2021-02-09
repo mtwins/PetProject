@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat.startActivity
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.fragment.app.FragmentTransaction
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -19,11 +18,9 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.mheredia.petproject.data.model.Contact
-import com.mheredia.petproject.ui.contacts.AddEditContactsFragment
 import com.mheredia.petproject.ui.contacts.ContactsFragment
 
-class MainActivity : AppCompatActivity(), ContactsFragment.ContactInterface, AddEditContactsFragment.AddEditContactInterface {
+class MainActivity : AppCompatActivity(), ContactsFragment.ContactInterface {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
 
@@ -76,13 +73,7 @@ class MainActivity : AppCompatActivity(), ContactsFragment.ContactInterface, Add
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-    override fun addContactButtonClicked() {
-        val addEditFragment = AddEditContactsFragment.newInstance()
-        val fragmentTransaction: FragmentTransaction = supportFragmentManager.beginTransaction()
-        getBundle(Contact())
-        fragmentTransaction.add(R.id.top_parent, addEditFragment).addToBackStack(null)
-        fragmentTransaction.commit()
-    }
+
 
     override fun openEmail(email: String) {
         val intent = Intent(Intent.ACTION_SEND)
@@ -101,29 +92,5 @@ class MainActivity : AppCompatActivity(), ContactsFragment.ContactInterface, Add
         startActivity(intent)
     }
 
-    override fun editContactButtonClicked(contact: Contact) {
-        val addEditFragment = AddEditContactsFragment.newInstance()
-        val fragmentTransaction: FragmentTransaction = supportFragmentManager.beginTransaction()
-        val bundle = getBundle(contact)
-        addEditFragment.setArguments(bundle)
-        fragmentTransaction.add(R.id.top_parent, addEditFragment).addToBackStack(null)
-        fragmentTransaction.commit()
-    }
-
-    private fun getBundle(contact: Contact): Bundle {
-        val bundle = Bundle()
-        bundle.putString("name", contact.name)
-        bundle.putString("email", contact.email)
-        bundle.putString("phone", contact.phone)
-        bundle.putString("notes", contact.notes)
-        bundle.putString("userId", contact.userId)
-        bundle.putString("contactId", contact.contactId)
-        return bundle
-    }
-
-    override fun goToContacts() {
-        val fragmentTransaction: FragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.commit()
-    }
 
 }
