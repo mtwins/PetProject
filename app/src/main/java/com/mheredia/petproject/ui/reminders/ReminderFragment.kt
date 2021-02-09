@@ -32,12 +32,12 @@ class ReminderFragment : Fragment() {
         reminderViewModel.getReminders()
         var reminderList = root.findViewById<RecyclerView>(R.id.reminders_list)
         reminderViewModel.reminderInfo.observe(viewLifecycleOwner, Observer { result ->
-            var reminderAdapter = ReminderAdapter(result.toMutableList(), ::openReminderDialog)
+            reminderViewModel.adapter= ReminderAdapter(result.toMutableList(), ::openReminderDialog)
             reminderList.apply {
                 layoutManager = LinearLayoutManager(activity)
-                adapter = reminderAdapter
+                adapter = reminderViewModel.adapter
             }
-            reminderAdapter.notifyDataSetChanged()
+            reminderViewModel.adapter.notifyDataSetChanged()
 
         })
 

@@ -48,12 +48,10 @@ class ReminderDialogFragment(var reminder: Reminder) :
                 .setPositiveButton(
                     "Save"
                 ) { dialog, id ->
-                    val reminder = Reminder(
-                        nameTextBox.text.toString(),
-                        dateTextBox.text.toString(),
-                        timeTextBox.text.toString(),
-                        userId = Firebase.auth.currentUser?.uid.toString()
-                    )
+                    reminder.name=nameTextBox.text.toString()
+                    reminder.date=dateTextBox.text.toString()
+                    reminder.time=timeTextBox.text.toString()
+                    reminder.userId=Firebase.auth.currentUser?.uid.toString()
                     writeReminderToDb(reminder)
                 }
                 .setNegativeButton("Cancel",
@@ -101,7 +99,7 @@ class ReminderDialogFragment(var reminder: Reminder) :
                 .set(reminder)
                 .addOnSuccessListener { documentReference ->
                     Log.d("ContactDone", "DocumentSnapshot successfully written!")
-                    
+
                 }
                 .addOnFailureListener { e -> Log.w("ContactError", "Error writing document", e) }
         } else {

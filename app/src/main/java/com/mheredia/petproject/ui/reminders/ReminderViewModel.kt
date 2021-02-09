@@ -12,6 +12,7 @@ import kotlinx.coroutines.tasks.await
 
 class ReminderViewModel : ViewModel() {
     val reminderInfo = MutableLiveData<List<Reminder>>()
+    lateinit var adapter: ReminderAdapter
 
     fun getReminders() {
         viewModelScope.launch {
