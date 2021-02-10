@@ -1,14 +1,15 @@
 package com.mheredia.petproject.ui.reminders
 
-import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
 import android.content.DialogInterface
 import android.os.Bundle
+import android.view.ViewGroup
 import android.widget.DatePicker
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.mheredia.petproject.R
@@ -22,11 +23,20 @@ class ReminderDialogFragment(
    var  reminderViewModel: ReminderViewModel
 ) :
     DialogFragment() {
+    override fun onStart() {
+        super.onStart()
+        val dialog = dialog
+        if (dialog != null) {
+            val width = ViewGroup.LayoutParams.MATCH_PARENT
+            val height = ViewGroup.LayoutParams.MATCH_PARENT
+            dialog.window!!.setLayout(width, height)
+        }
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
         return activity?.let {
-            val builder = AlertDialog.Builder(it)
+            val builder = MaterialAlertDialogBuilder(it)
             val inflater = requireActivity().layoutInflater;
             val view = inflater.inflate(R.layout.dialog_reminder, null)
 

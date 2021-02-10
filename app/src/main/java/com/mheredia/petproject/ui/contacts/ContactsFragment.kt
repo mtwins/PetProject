@@ -22,10 +22,8 @@ class ContactsFragment : Fragment() {
     private lateinit var fab: FloatingActionButton
 
     interface ContactInterface {
-
         fun openEmail(email: String)
         fun openPhone(phone: String)
-
     }
 
     companion object {

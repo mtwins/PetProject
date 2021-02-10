@@ -6,6 +6,7 @@ import android.app.Dialog
 import android.app.TimePickerDialog
 import android.content.DialogInterface
 import android.os.Bundle
+import android.view.ViewGroup
 import android.widget.DatePicker
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
@@ -20,9 +21,19 @@ import java.util.*
 
 class ContactDialogFragment(
     var contact: Contact,
-    var  contactViewModel: ContactsViewModel
+    var contactViewModel: ContactsViewModel
 ) :
     DialogFragment() {
+
+    override fun onStart() {
+        super.onStart()
+        val dialog = dialog
+        if (dialog != null) {
+            val width = ViewGroup.LayoutParams.MATCH_PARENT
+            val height = ViewGroup.LayoutParams.MATCH_PARENT
+            dialog.window!!.setLayout(width, height)
+        }
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
@@ -50,11 +61,11 @@ class ContactDialogFragment(
                 .setPositiveButton(
                     "Save"
                 ) { dialog, id ->
-                    contact.name=nameTextBox.text.toString()
-                    contact.email=emailTextBox.text.toString()
-                    contact.phone=phoneTextBox.text.toString()
-                    contact.notes=notesTextBox.text.toString()
-                    contact.userId=Firebase.auth.currentUser?.uid.toString()
+                    contact.name = nameTextBox.text.toString()
+                    contact.email = emailTextBox.text.toString()
+                    contact.phone = phoneTextBox.text.toString()
+                    contact.notes = notesTextBox.text.toString()
+                    contact.userId = Firebase.auth.currentUser?.uid.toString()
                     contactViewModel.writeContactToDb(contact)
                 }
                 .setNegativeButton("Cancel",
@@ -68,7 +79,6 @@ class ContactDialogFragment(
 
         } ?: throw IllegalStateException("Activity cannot be null")
     }
-
 
 
 }

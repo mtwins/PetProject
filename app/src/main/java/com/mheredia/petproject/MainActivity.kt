@@ -1,10 +1,13 @@
 package com.mheredia.petproject
 
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -15,15 +18,28 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.Registry
+import com.bumptech.glide.annotation.GlideModule
+import com.bumptech.glide.module.AppGlideModule
+import com.firebase.ui.storage.images.FirebaseImageLoader
 import com.google.android.material.navigation.NavigationView
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.StorageReference
+import com.google.firebase.storage.ktx.storage
 import com.mheredia.petproject.ui.contacts.ContactsFragment
+import com.mheredia.petproject.ui.login.LoginActivity
+import java.io.InputStream
 
-class MainActivity : AppCompatActivity(), ContactsFragment.ContactInterface {
+
+class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
-
+    private var firebaseAuth: FirebaseAuth = Firebase.auth
+    private lateinit var profileImage: ImageView
+    val profileStorageRef = storage.reference
 
     companion object {
         fun route(context: Context) {
@@ -31,10 +47,12 @@ class MainActivity : AppCompatActivity(), ContactsFragment.ContactInterface {
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(context, intent, null)
         }
+        val storage = Firebase.storage
+
+        val REQUEST_IMAGE_CAPTURE = 1
+        val PICTURE_REQUEST_CODE = 500
 
     }
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,14 +62,55 @@ class MainActivity : AppCompatActivity(), ContactsFragment.ContactInterface {
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
-        appBarConfiguration = AppBarConfiguration(setOf(
-                R.id.nav_pet_info, R.id.nav_gallery, R.id.nav_contact, R.id.nav_reminders), drawerLayout)
+        appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_pet_info, R.id.nav_gallery, R.id.nav_contact, R.id.nav_reminders, R.id.logout), drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         navView.bringToFront()
+        val logoutItem: MenuItem = navView.getMenu().findItem(R.id.logout)
+        setLogout(logoutItem)
+    }
+
+    private fun setImageSelection(profileImage: ImageView) {
+        profileImage.setOnClickListener {
+             try {
+                val intent = Intent(Intent.ACTION_PICK)
+                intent.type = "image/*"
+                intent.putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/jpeg", "image/png"))
+                startActivityForResult(intent, PICTURE_REQUEST_CODE)
+            } catch (e: ActivityNotFoundException) { }
+        }
+    }
 
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data);
+            if (requestCode == PICTURE_REQUEST_CODE && resultCode == RESULT_OK) {
+                var selectedImage: Uri? = data?.getData();
+                if (selectedImage != null) {
+                    val userId = firebaseAuth.currentUser?.uid.toString()
+                    storage.reference.child("profile/$userId").putFile(selectedImage).addOnSuccessListener {
+                        loadImageIntoImageView("profile/$userId")
 
+                    }
+                }
+            }
+    }
+
+    private fun setLogout(logoutItem: MenuItem) {
+        logoutItem.setOnMenuItemClickListener { menuItem ->
+            firebaseAuth.signOut()
+            startActivity(Intent(this, LoginActivity::class.java))
+            true
+        }
+    }
+
+
+    override fun onStart() {
+        super.onStart()
+        val currentUser = firebaseAuth.currentUser
+        if (currentUser == null) {
+            startActivity(Intent(this, LoginActivity::class.java))
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -63,17 +122,28 @@ class MainActivity : AppCompatActivity(), ContactsFragment.ContactInterface {
     private fun setUpHeader() {
         val headerTitle: TextView = findViewById(R.id.nav_header_title)
         val headerSubtitle: TextView = findViewById(R.id.nav_header_subtitle)
-        val auth = Firebase.auth
-        headerTitle.text = auth.currentUser?.displayName
-        headerSubtitle.text = auth.currentUser?.email
+        profileImage = findViewById(R.id.profile_image)
+        val profileImageDownloadUrl = "profile/${firebaseAuth.currentUser?.uid.toString()}"
+        loadImageIntoImageView(profileImageDownloadUrl)
+        setImageSelection(profileImage)
+        headerTitle.text = firebaseAuth.currentUser?.displayName
+        headerSubtitle.text = firebaseAuth.currentUser?.email
+    }
+
+    private fun loadImageIntoImageView(profileImageDownloadUrl: String) {
+        GlideApp.with(this)
+            .load(storage.reference.child(profileImageDownloadUrl))
+            .error(
+                Glide.with(this)
+                    .load(getDrawable(R.mipmap.ic_launcher_round))
+            )
+            .into(profileImage);
     }
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
-
-
 
     override fun openEmail(email: String) {
         val intent = Intent(Intent.ACTION_SEND)
@@ -91,6 +161,4 @@ class MainActivity : AppCompatActivity(), ContactsFragment.ContactInterface {
         intent.data = Uri.parse("tel:$phone")
         startActivity(intent)
     }
-
-
 }
