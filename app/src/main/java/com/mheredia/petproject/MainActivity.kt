@@ -114,7 +114,7 @@ class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main, menu)
+//        menuInflater.inflate(R.menu.main, menu)
         setUpHeader()
         return true
     }
@@ -137,6 +137,7 @@ class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface {
                 Glide.with(this)
                     .load(getDrawable(R.mipmap.ic_launcher_round))
             )
+
             .into(profileImage);
     }
 
