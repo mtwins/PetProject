@@ -14,6 +14,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mheredia.petproject.R
 import com.mheredia.petproject.data.model.Reminder
 import com.mheredia.petproject.ui.utils.SwipeToDeleteCallback
+import java.util.*
 
 
 class ReminderFragment : Fragment() {
@@ -21,7 +22,9 @@ class ReminderFragment : Fragment() {
     companion object {
         fun newInstance() = ReminderFragment()
     }
-
+    interface ReminderInterface {
+        fun sendReminder(message: String, id: String, calendar: Calendar)
+    }
     private lateinit var reminderViewModel: ReminderViewModel
 
     override fun onCreateView(

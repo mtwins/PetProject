@@ -20,7 +20,7 @@ import java.util.*
 
 class ReminderDialogFragment(
     var reminder: Reminder,
-   var  reminderViewModel: ReminderViewModel
+   var reminderViewModel: ReminderViewModel
 ) :
     DialogFragment() {
     override fun onStart() {
@@ -43,6 +43,7 @@ class ReminderDialogFragment(
             val nameTextBox: TextView = view.findViewById(R.id.reminder_name)
             val dateTextBox: TextView = view.findViewById(R.id.reminder_date)
             val timeTextBox: TextView = view.findViewById(R.id.reminder_time)
+            var calender= Calendar.getInstance()
 
             var title = "Add Reminder"
             if (reminder.reminderId.isNotBlank()) {
@@ -51,8 +52,8 @@ class ReminderDialogFragment(
                 dateTextBox.setText(reminder.date)
                 timeTextBox.setText(reminder.time)
             }
-            setDateTextOnClickListener(dateTextBox)
-            setTimeTextOnClickListener(timeTextBox)
+            setDateTextOnClickListener(dateTextBox, calender)
+            setTimeTextOnClickListener(timeTextBox, calender)
 
             builder.setView(view)
                 .setTitle(title)
@@ -60,10 +61,10 @@ class ReminderDialogFragment(
                     "Save"
                 ) { dialog, id ->
                     reminder.name=nameTextBox.text.toString()
-                    reminder.date=dateTextBox.text.toString()
+                    reminder.date= dateTextBox.text.toString()
                     reminder.time=timeTextBox.text.toString()
                     reminder.userId=Firebase.auth.currentUser?.uid.toString()
-                    reminderViewModel.writeReminderToDb(reminder)
+                    reminderViewModel.writeReminderToDb(reminder, calender, this.requireActivity())
                 }
                 .setNegativeButton("Cancel",
                     DialogInterface.OnClickListener { dialog, id ->
@@ -77,25 +78,28 @@ class ReminderDialogFragment(
         } ?: throw IllegalStateException("Activity cannot be null")
     }
 
-    private fun setDateTextOnClickListener(dateTextBox: TextView) {
+
+    private fun setDateTextOnClickListener(dateTextBox: TextView, calender: Calendar) {
         dateTextBox.setOnClickListener {
             var datePickerDialog = DatePickerDialog(this.requireContext())
-
             datePickerDialog.setOnDateSetListener { datePicker: DatePicker, year: Int, month: Int, day: Int ->
+                calender.set(Calendar.MONTH, month)
+                calender.set(Calendar.DAY_OF_MONTH, day)
+                calender.set(Calendar.YEAR, year)
                 dateTextBox.setText("$month/$day/$year")
             }
             datePickerDialog.show()
         }
     }
 
-    private fun setTimeTextOnClickListener(timeTextBox: TextView) {
+    private fun setTimeTextOnClickListener(timeTextBox: TextView, calender: Calendar) {
         timeTextBox.setOnClickListener {
             val timeSetListener =
                 TimePickerDialog.OnTimeSetListener { timePicker, hour, minute ->
-                    val cal = Calendar.getInstance()
-                    cal.set(Calendar.HOUR_OF_DAY, hour)
-                    cal.set(Calendar.MINUTE, minute)
-                    timeTextBox.setText(SimpleDateFormat("HH:mm a").format(cal.time).toString())
+                    calender.set(Calendar.HOUR_OF_DAY, hour)
+                    calender.set(Calendar.MINUTE, minute)
+                    calender.set(Calendar.SECOND, 0)
+                    timeTextBox.setText(SimpleDateFormat("hh:mm a").format(calender.time).toString())
                 }
             TimePickerDialog(this.requireContext(), timeSetListener, 0, 0, false).show()
         }

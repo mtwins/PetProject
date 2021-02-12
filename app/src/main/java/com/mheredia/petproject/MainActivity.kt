@@ -1,5 +1,6 @@
 package com.mheredia.petproject
 
+import android.app.AlarmManager
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -11,6 +12,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat.startActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.findNavController
@@ -19,22 +21,19 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.bumptech.glide.Glide
-import com.bumptech.glide.Registry
-import com.bumptech.glide.annotation.GlideModule
-import com.bumptech.glide.module.AppGlideModule
-import com.firebase.ui.storage.images.FirebaseImageLoader
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.StorageReference
 import com.google.firebase.storage.ktx.storage
 import com.mheredia.petproject.ui.contacts.ContactsFragment
 import com.mheredia.petproject.ui.login.LoginActivity
-import java.io.InputStream
+import com.mheredia.petproject.ui.reminders.ReminderFragment
+import com.mheredia.petproject.ui.utils.NotificationUtils
+import java.util.*
 
 
-class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface {
+class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface, ReminderFragment.ReminderInterface {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private var firebaseAuth: FirebaseAuth = Firebase.auth
@@ -52,13 +51,21 @@ class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface {
         val REQUEST_IMAGE_CAPTURE = 1
         val PICTURE_REQUEST_CODE = 500
 
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
+
         setSupportActionBar(toolbar)
+        //notificaiton
+        NotificationUtils().createNotificationChannel(this,
+            NotificationManagerCompat.IMPORTANCE_DEFAULT, false,
+            getString(R.string.app_name), "App notification channel.")
+
+
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
@@ -161,5 +168,10 @@ class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface {
         val intent = Intent(Intent.ACTION_DIAL)
         intent.data = Uri.parse("tel:$phone")
         startActivity(intent)
+    }
+
+    override fun sendReminder(message: String, id: String, calendar: Calendar) {
+        val alarmManager =  getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        NotificationUtils().setNotification(this,calendar,message,id, alarmManager)
     }
 }

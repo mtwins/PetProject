@@ -13,8 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mheredia.petproject.R
 import com.mheredia.petproject.data.model.Contact
-import com.mheredia.petproject.data.model.Reminder
-import com.mheredia.petproject.ui.reminders.ReminderDialogFragment
 import com.mheredia.petproject.ui.utils.SwipeToDeleteCallback
 
 class ContactsFragment : Fragment() {
