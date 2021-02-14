@@ -1,9 +1,10 @@
 package com.mheredia.petproject.data.model
 
 data class PetInfo(
-    val userId:String,
+    var petId:String="",
     var petName:String="",
     var petType:String="",
     var petBreed:String="",
-    var petProfilePictureId:String=""
+    var petAge:String="",
+    var userId:String=""
 )

@@ -47,14 +47,14 @@ class ContactsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        val root = inflater.inflate(R.layout.fragment_contacts, container, false)
+        val root = inflater.inflate(R.layout.fragment_list, container, false)
         contactsViewModel.getContacts()
-        fab = root.findViewById(R.id.add_contacts)
+        fab = root.findViewById(R.id.add_items)
         fab.setOnClickListener { view ->
             openContactDialog()
         }
 
-        var contacts_list = root.findViewById<RecyclerView>(R.id.contacts_list)
+        var contacts_list = root.findViewById<RecyclerView>(R.id.list_items)
         contactsViewModel.contactInfo.observe(viewLifecycleOwner, Observer { result ->
             contactsViewModel.contactsAdapter =
                 ContactsAdapter(
@@ -86,6 +86,7 @@ class ContactsFragment : Fragment() {
     private fun openPhone(phone:String){
         contactsViewModel.openPhone(this.requireActivity(),phone )
     }
+
 
 
 }

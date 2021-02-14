@@ -1,5 +1,6 @@
 package com.mheredia.petproject
 
+import android.app.Activity
 import android.app.AlarmManager
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -28,12 +29,14 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.mheredia.petproject.ui.contacts.ContactsFragment
 import com.mheredia.petproject.ui.login.LoginActivity
+import com.mheredia.petproject.ui.petInfo.PetInfoFragment
 import com.mheredia.petproject.ui.reminders.ReminderFragment
 import com.mheredia.petproject.ui.utils.NotificationUtils
 import java.util.*
 
 
-class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface, ReminderFragment.ReminderInterface {
+class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface,
+    ReminderFragment.ReminderInterface, PetInfoFragment.PetImageInterface {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private var firebaseAuth: FirebaseAuth = Firebase.auth
@@ -46,6 +49,7 @@ class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface, R
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(context, intent, null)
         }
+
         val storage = Firebase.storage
 
         val REQUEST_IMAGE_CAPTURE = 1
@@ -61,15 +65,25 @@ class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface, R
 
         setSupportActionBar(toolbar)
         //notificaiton
-        NotificationUtils().createNotificationChannel(this,
+        NotificationUtils().createNotificationChannel(
+            this,
             NotificationManagerCompat.IMPORTANCE_DEFAULT, false,
-            getString(R.string.app_name), "App notification channel.")
+            getString(R.string.app_name), "App notification channel."
+        )
 
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
-        appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_pet_info, R.id.nav_gallery, R.id.nav_contact, R.id.nav_reminders, R.id.logout), drawerLayout)
+        appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.nav_pet_info,
+                R.id.nav_gallery,
+                R.id.nav_contact,
+                R.id.nav_reminders,
+                R.id.logout
+            ), drawerLayout
+        )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         navView.bringToFront()
@@ -79,7 +93,7 @@ class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface, R
 
     private fun setImageSelection(profileImage: ImageView) {
         profileImage.setOnClickListener {
-             try {
+            try {
                 val intent = Intent(Intent.ACTION_PICK)
                 intent.type = "image/*"
                 intent.putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/jpeg", "image/png"))
@@ -88,20 +102,6 @@ class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface, R
         }
     }
 
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data);
-            if (requestCode == PICTURE_REQUEST_CODE && resultCode == RESULT_OK) {
-                var selectedImage: Uri? = data?.getData();
-                if (selectedImage != null) {
-                    val userId = firebaseAuth.currentUser?.uid.toString()
-                    storage.reference.child("profile/$userId").putFile(selectedImage).addOnSuccessListener {
-                        loadImageIntoImageView("profile/$userId")
-
-                    }
-                }
-            }
-    }
 
     private fun setLogout(logoutItem: MenuItem) {
         logoutItem.setOnMenuItemClickListener { menuItem ->
@@ -171,7 +171,17 @@ class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface, R
     }
 
     override fun sendReminder(message: String, id: String, calendar: Calendar) {
-        val alarmManager =  getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        NotificationUtils().setNotification(this,calendar,message,id, alarmManager)
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        NotificationUtils().setNotification(this, calendar, message, id, alarmManager)
     }
+
+    override fun setPetImage(petId: String, image: ImageView) {
+        try {
+            val intent = Intent(Intent.ACTION_PICK)
+            intent.type = "image/*"
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/jpeg", "image/png"))
+            startActivityForResult(intent, PICTURE_REQUEST_CODE)
+        } catch (e: ActivityNotFoundException) { }
+    }
+
 }
