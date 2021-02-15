@@ -2,11 +2,17 @@ package com.mheredia.petproject.ui.petInfo
 
 import android.app.AlertDialog
 import android.app.Dialog
-import android.content.DialogInterface
+import android.content.res.Resources
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import android.widget.ArrayAdapter
+import android.widget.AutoCompleteTextView
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
+import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.mheredia.petproject.R
@@ -18,37 +24,52 @@ class PetDialogFragment(
     var petInfoViewModel: PetInfoViewModel
 ) :
     DialogFragment() {
-    lateinit var  nameTextBox: TextView
-    lateinit var  petTypeTextBox: TextView
-    lateinit var  petBreedTextBox: TextView
-    lateinit var  petAgeTextBox: TextView
+    lateinit var nameTextBox: TextView
+    lateinit var petTypeTextBox: TextView
+    lateinit var petBreedTextBox: TextView
+    lateinit var petAgeTextBox: TextView
 
     override fun onStart() {
         super.onStart()
-        val dialog = dialog
-        if (dialog != null) {
-            val width = ViewGroup.LayoutParams.MATCH_PARENT
-            val height = ViewGroup.LayoutParams.MATCH_PARENT
-            dialog.window!!.setLayout(width, height)
-        }
+//        val dialog = dialog
+//        if (dialog != null) {
+//            val width = ViewGroup.LayoutParams.MATCH_PARENT
+//            val height = ViewGroup.LayoutParams.MATCH_PARENT
+//            dialog.window!!.setLayout(width, height)
+//        }
     }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+//        setStyle(STYLE_NORMAL, R.style.FullScreenDialog)
+    }
+
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
-        return activity?.let {
-            val builder = AlertDialog.Builder(it)
+        val dialog: Dialog = activity?.let {
+            val builder = AlertDialog.Builder(it, R.style.FullScreenDialog)
             val inflater = requireActivity().layoutInflater;
             val view = inflater.inflate(R.layout.dialog_add_pet_info, null)
 
-             nameTextBox = view.findViewById(R.id.pet_name_edit_text)
-             petTypeTextBox = view.findViewById(R.id.pet_type_edit_text)
-             petBreedTextBox = view.findViewById(R.id.pet_breed_edit_text)
-             petAgeTextBox = view.findViewById(R.id.pet_age_text)
+            nameTextBox = view.findViewById(R.id.pet_name_edit_text)
+            petTypeTextBox = view.findViewById(R.id.pet_type_edit_text)
+            val petTypeTextContainer: TextInputLayout = view.findViewById(R.id.pet_type_textbox)
+            val items = listOf("Cat", "Dog", "Bird", "Reptile", "Fish", "Other")
+            val adapter = ArrayAdapter(requireContext(), R.layout.list_item, items)
+            (petTypeTextContainer.editText as? AutoCompleteTextView)?.setAdapter(adapter)
+            petBreedTextBox = view.findViewById(R.id.pet_breed_edit_text)
+            petAgeTextBox = view.findViewById(R.id.pet_age_text)
 
             var title = "Add Pet"
             if (petInfo.petId.isNotBlank()) {
                 title = "Edit Pet Info"
-                setPetInfoTextBoxes(nameTextBox, petTypeTextBox, petAgeTextBox, petBreedTextBox)
+                setPetInfoTextBoxes(
+                    nameTextBox,
+                    petTypeTextContainer,
+                    petAgeTextBox,
+                    petBreedTextBox
+                )
             }
 
             builder.setView(view)
@@ -66,16 +87,17 @@ class PetDialogFragment(
 
 
         } ?: throw IllegalStateException("Activity cannot be null")
+        return dialog
     }
 
     private fun setPetInfoTextBoxes(
         nameTextBox: TextView,
-        petTypeTextBox: TextView,
+        petTypeTextBox: TextInputLayout,
         petAgeTextBox: TextView,
         petBreedTextBox: TextView
     ) {
         nameTextBox.setText(petInfo.petName)
-        petTypeTextBox.setText(petInfo.petType)
+        (petTypeTextBox.editText as AutoCompleteTextView).setText(petInfo.petType, false)
         petAgeTextBox.setText(petInfo.petAge)
         petBreedTextBox.setText(petInfo.petBreed)
     }

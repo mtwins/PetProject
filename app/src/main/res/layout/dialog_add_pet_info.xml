@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/secondaryColor"
     tools:context=".ui.registration.RegistrationFragment">
 
     <RelativeLayout
@@ -40,15 +39,34 @@
             android:layout_centerHorizontal="true"
             android:layout_below="@+id/pet_name_textbox"
             android:layout_marginBottom="10dp"
-            android:hint="Pet Type">
+            style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
+            android:hint="@string/pet_type">
 
-            <!--this is the actual edit text which takes the input-->
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/pet_type_edit_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+        <AutoCompleteTextView
+            android:id="@+id/pet_type_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="none"
+            />
 
-        </com.google.android.material.textfield.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
+
+<!--        <com.google.android.material.textfield.TextInputLayout-->
+<!--            android:id="@+id/pet_type_textbox"-->
+<!--            android:layout_width="200dp"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_centerHorizontal="true"-->
+<!--            android:layout_below="@+id/pet_name_textbox"-->
+<!--            android:layout_marginBottom="10dp"-->
+<!--            android:hint="Pet Type">-->
+
+<!--            &lt;!&ndash;this is the actual edit text which takes the input&ndash;&gt;-->
+<!--            <com.google.android.material.textfield.TextInputEditText-->
+<!--                android:id="@+id/pet_type_edit_text"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content" />-->
+
+<!--        </com.google.android.material.textfield.TextInputLayout>-->
 
 
         <com.google.android.material.textfield.TextInputLayout
@@ -80,6 +98,7 @@
             <!--this is the actual edit text which takes the input-->
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/pet_age_text"
+                android:inputType="numberDecimal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
