@@ -9,7 +9,7 @@
         android:id="@+id/nav_pet_info"
         android:name="com.mheredia.petproject.ui.petInfo.PetInfoFragment"
         android:label="@string/menu_pet_info"
-        tools:layout="@layout/fragment_pet_info" />
+        tools:layout="@layout/fragment_list" />
 
     <fragment
         android:id="@+id/nav_gallery"
@@ -27,5 +27,5 @@
         android:id="@+id/nav_reminders"
         android:name="com.mheredia.petproject.ui.reminders.ReminderFragment"
         android:label="@string/reminders"
-        tools:layout="@layout/fragment_reminders" />
+        tools:layout="@layout/fragment_list" />
 </navigation>

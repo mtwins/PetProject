@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -31,11 +32,12 @@ class ReminderFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+      
 
         reminderViewModel = ViewModelProvider(this).get(ReminderViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_reminders, container, false)
+        val root = inflater.inflate(R.layout.fragment_list, container, false)
         reminderViewModel.getReminders()
-        val reminderList = root.findViewById<RecyclerView>(R.id.reminders_list)
+        val reminderList = root.findViewById<RecyclerView>(R.id.list_items)
         reminderViewModel.reminderInfo.observe(viewLifecycleOwner, Observer { result ->
             reminderViewModel.reminderAdapter= ReminderAdapter(result.toMutableList(), ::openReminderDialog)
             reminderList.apply {
@@ -50,7 +52,7 @@ class ReminderFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val button: FloatingActionButton = view.findViewById(R.id.add_reminders)
+        val button: FloatingActionButton = view.findViewById(R.id.add_items)
         button.setOnClickListener {
             openReminderDialog()
         }

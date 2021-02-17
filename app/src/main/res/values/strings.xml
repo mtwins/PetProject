@@ -37,4 +37,6 @@
     <string name="phone">Phone</string>
     <string name="reminders">Reminders</string>
     <string name="logout">Logout</string>
+    <string name="pet_type">Pet Type</string>
+    <string name="save">Save</string>
 </resources>
