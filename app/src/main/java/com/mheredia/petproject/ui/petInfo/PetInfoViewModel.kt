@@ -1,6 +1,5 @@
 package com.mheredia.petproject.ui.petInfo
 
-import android.widget.ImageView
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,6 +14,7 @@ import kotlinx.coroutines.tasks.await
 class PetInfoViewModel : ViewModel() {
     lateinit var petInfoAdapter: PetInfoAdapter
     val petInfo = MutableLiveData<List<PetInfo>>()
+    var updateProfileIndex=0
     private val db = Firebase.firestore
     private val _text = MutableLiveData<String>().apply {
         value = "This is pet info Fragment"
@@ -75,9 +75,9 @@ class PetInfoViewModel : ViewModel() {
     fun setPetProfile(
         activity: FragmentActivity,
         petId: String,
-        imageView: ImageView
+        index: Int
     ) {
         var mCallback = activity as PetInfoFragment.PetImageInterface
-        mCallback.setPetImage( petId, imageView)
+        mCallback.setPetImage( petId, index)
     }
 }

@@ -7,10 +7,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.activityViewModels
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.mheredia.petproject.GlideApp
+import com.mheredia.petproject.MainActivity
 import com.mheredia.petproject.R
 import com.mheredia.petproject.data.model.PetPicture
 import kotlinx.coroutines.Dispatchers
@@ -37,7 +41,7 @@ class GalleryAdapter(var result: MutableList<PetPicture>, var context: Context) 
         notifyDataSetChanged()
     }
 
-    fun deleteContact(index: Int) {
+    fun deletePicture(index: Int) {
         result.removeAt(index)
         notifyDataSetChanged()
     }
@@ -55,48 +59,37 @@ class GalleryAdapter(var result: MutableList<PetPicture>, var context: Context) 
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.tag.text = result[position].pictureTag
-        val picture ="https://ichef.bbci.co.uk/news/1024/cpsprodpb/151AB/production/_111434468_gettyimages-1143489763.jpg"
+        val picture =
+            "https://ichef.bbci.co.uk/news/1024/cpsprodpb/151AB/production/_111434468_gettyimages-1143489763.jpg"
 //            Firebase.storage.reference.child("profile/${Firebase.auth.currentUser?.uid.toString()}")
-         Glide.with(context)
-            .asBitmap()
-            .load(picture)
-            .centerCrop()
-            .placeholder(R.drawable.ic_launcher_foreground)
+        GlideApp.with(holder.itemView.context)
+            .load(MainActivity.storage.reference.child(result[position].pictureUrl))
+            .error(
+                Glide.with(holder.itemView.context)
+                    .load(
+                        AppCompatResources.getDrawable(
+                            holder.itemView.context,
+                            R.drawable.ic_menu_camera
+                        )
+                    )
+            )
             .into(holder.petPicture)
 
         GlobalScope.launch(Dispatchers.IO) {
             val bitmap = Glide.with(context)
                 .asBitmap()
                 .load(picture)
-                .centerCrop()
                 .submit(100, 100).get()
             Palette.from(bitmap).generate { palette ->
-                palette?.getDarkVibrantColor(ContextCompat.getColor(context, android.R.color.black)).let {bgColor->
-                    if (bgColor != null) {
-                        holder.tagHolder.setBackgroundColor(bgColor)
+                palette?.getDarkVibrantColor(ContextCompat.getColor(context, android.R.color.black))
+                    .let { bgColor ->
+                        if (bgColor != null) {
+                            holder.tagHolder.setBackgroundColor(bgColor)
+                        }
                     }
-                }
             }
 
         }
-
-
-//        val photo = BitmapFactory.decodeResource(context.resources,
-//            pictureGlide.getImageResourceId(context))
-//        Palette.from(photo).generate { palette ->
-//            val bgColor = palette?.getMutedColor(
-//                ContextCompat.getColor(context,
-//                android.R.color.black))
-//            holder.tagHolder.setBackgroundColor(bgColor)
-//        }
-//        holder.subTitle.text = result[position].notes
-//
-//        holder.emailImage.setOnClickListener {
-//            openEmail(result[position].email )
-//        }
-//        holder.phoneImage.setOnClickListener {
-//            openPhone(result[position].phone )
-//        }
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

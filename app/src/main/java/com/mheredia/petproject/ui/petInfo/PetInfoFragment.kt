@@ -1,12 +1,14 @@
 package com.mheredia.petproject.ui.petInfo
 
-import android.media.Image
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -19,12 +21,12 @@ import com.mheredia.petproject.ui.utils.SwipeToDeleteCallback
 
 class PetInfoFragment : Fragment() {
 
-    private lateinit var petInfoViewModel: PetInfoViewModel
+    private val petInfoViewModel: PetInfoViewModel by activityViewModels()
 
     private lateinit var fab: FloatingActionButton
 
     interface PetImageInterface {
-        fun setPetImage(petId: String, image:ImageView)
+        fun setPetImage(petId: String, index: Int)
     }
 
     override fun onResume() {
@@ -32,10 +34,6 @@ class PetInfoFragment : Fragment() {
         petInfoViewModel.getPetInfo()
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        petInfoViewModel = ViewModelProvider(this).get(PetInfoViewModel::class.java)
-    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -57,6 +55,7 @@ class PetInfoFragment : Fragment() {
                     ::openPetInfoDialog,
                     ::selectPetProfile
                 )
+
             pet_list.apply {
                 layoutManager = LinearLayoutManager(activity)
                 adapter = petInfoViewModel.petInfoAdapter
@@ -73,8 +72,8 @@ class PetInfoFragment : Fragment() {
             PetDialogFragment(petInfo, petInfoViewModel).show(it, "")
         }
     }
-    private fun selectPetProfile(petId:String, imageView: ImageView){
-        petInfoViewModel.setPetProfile(this.requireActivity(), petId , imageView)
+    private fun selectPetProfile(petId:String, index: Int){
+        petInfoViewModel.setPetProfile(this.requireActivity(), petId , index)
     }
 
 

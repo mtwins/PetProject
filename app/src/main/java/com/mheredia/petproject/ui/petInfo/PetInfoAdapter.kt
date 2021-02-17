@@ -1,29 +1,29 @@
 package com.mheredia.petproject.ui.petInfo
 
-import android.media.Image
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
-import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.mheredia.petproject.GlideApp
 import com.mheredia.petproject.MainActivity
 import com.mheredia.petproject.R
 import com.mheredia.petproject.data.model.PetInfo
-import kotlin.reflect.KFunction3
+import kotlinx.coroutines.tasks.await
 
 class PetInfoAdapter(
     var result: MutableList<PetInfo>,
     var openDialog: (petInfo: PetInfo) -> Unit,
-    var selectPetProfile: (petId:String, image:ImageView) -> Unit
+    var selectPetProfile: (petId:String, index:Int) -> Unit
 ) :
     RecyclerView.Adapter<PetInfoAdapter.ViewHolder>() {
+
 
     fun addPet(petInfo: PetInfo) {
         result.add(petInfo)
@@ -64,18 +64,32 @@ class PetInfoAdapter(
         holder.subTitle2.text = "${result[position].petAge} years old"
 
         holder.petImage.setOnClickListener {
-            selectPetProfile( result[position].petId ,holder.petImage)
+            selectPetProfile( result[position].petId ,position)
+        }
+        if(!result[position].profileUrl.isNullOrEmpty()) {
+            GlideApp.with(holder.itemView.context)
+                .load(MainActivity.storage.reference.child(result[position].profileUrl))
+                .centerCrop()
+                .circleCrop()
+                .error(
+                    Glide.with(holder.itemView.context)
+                        .load(getDrawable(holder.itemView.context, R.drawable.ic_menu_camera))
+                )
+                .into(holder.petImage)
         }
 
-        GlideApp.with(holder.itemView.context)
-            .load(MainActivity.storage.reference.child("pet_profile/${result[position].petId}"))
-            .error(
-                Glide.with(holder.itemView.context)
-                    .load(getDrawable(holder.itemView.context,R.mipmap.ic_launcher_round))
-            )
 
-            .into(holder.petImage)
 
+    }
+
+    fun reloadImage(index: Int, url: String) {
+        result[index].profileUrl=url
+        val petInfoRef = Firebase.firestore.collection("pets")
+        petInfoRef
+            .document(result[index].petId)
+            .set(result[index]).addOnSuccessListener{
+                notifyItemChanged(index)
+            }
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

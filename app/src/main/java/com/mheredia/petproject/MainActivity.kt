@@ -1,16 +1,18 @@
 package com.mheredia.petproject
 
-import android.app.Activity
 import android.app.AlarmManager
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.NotificationManagerCompat
@@ -21,27 +23,33 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.bumptech.glide.Glide
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import com.mheredia.petproject.ui.contacts.ContactsFragment
+import com.mheredia.petproject.ui.gallery.GalleryFragment
+import com.mheredia.petproject.ui.gallery.GalleryViewModel
 import com.mheredia.petproject.ui.login.LoginActivity
 import com.mheredia.petproject.ui.petInfo.PetInfoFragment
+import com.mheredia.petproject.ui.petInfo.PetInfoViewModel
 import com.mheredia.petproject.ui.reminders.ReminderFragment
 import com.mheredia.petproject.ui.utils.NotificationUtils
-import kotlinx.coroutines.tasks.await
 import java.util.*
 
 
 class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface,
-    ReminderFragment.ReminderInterface, PetInfoFragment.PetImageInterface {
+    ReminderFragment.ReminderInterface, PetInfoFragment.PetImageInterface, GalleryFragment.GalleryInterface {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private var firebaseAuth: FirebaseAuth = Firebase.auth
     private lateinit var profileImage: ImageView
+    private lateinit var petId: String
+    private lateinit var petPictureId: String
+    private val petInfoViewModel: PetInfoViewModel by viewModels()
+    private val galleryViewModel: GalleryViewModel by viewModels()
     val profileStorageRef = storage.reference
 
     companion object {
@@ -55,6 +63,7 @@ class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface,
 
         val REQUEST_IMAGE_CAPTURE = 1
         val PICTURE_REQUEST_CODE = 500
+        val PET_PICTURE_REQUEST_CODE = 300
         val GALLERY_PICTURE_REQUEST_CODE = 400
 
 
@@ -64,7 +73,6 @@ class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface,
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
-
         setSupportActionBar(toolbar)
         NotificationUtils().createNotificationChannel(
             this,
@@ -88,6 +96,7 @@ class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface,
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         navView.bringToFront()
+
         val logoutItem: MenuItem = navView.getMenu().findItem(R.id.logout)
         setLogout(logoutItem)
     }
@@ -99,7 +108,8 @@ class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface,
                 intent.type = "image/*"
                 intent.putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/jpeg", "image/png"))
                 startActivityForResult(intent, PICTURE_REQUEST_CODE)
-            } catch (e: ActivityNotFoundException) { }
+            } catch (e: ActivityNotFoundException) {
+            }
         }
     }
 
@@ -139,15 +149,12 @@ class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface,
     }
 
     private fun loadImageIntoImageView(profileImageDownloadUrl: String) {
+
         GlideApp.with(this)
             .load(storage.reference.child(profileImageDownloadUrl))
             .centerCrop()
             .circleCrop()
-            .error(
-                Glide.with(this)
-                    .load(getDrawable(R.mipmap.ic_launcher_round))
-            )
-
+            .error(R.drawable.ic_baseline_close_24)
             .into(profileImage);
     }
 
@@ -178,45 +185,112 @@ class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface,
         NotificationUtils().setNotification(this, calendar, message, id, alarmManager)
     }
 
-    override fun setPetImage(petId: String, image: ImageView) {
+    override fun setPetImage(petId: String, index: Int) {
         try {
+            petInfoViewModel.updateProfileIndex=index
+            this.petId = petId
+            userSelectPicture(petId)
+        } catch (e: ActivityNotFoundException) {
+        }
+    }
+    private fun userSelectPictureGallery(fragmentContext:Context) {
+        val cameraIntent = {
+            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            startActivityForResult(intent, GALLERY_PICTURE_REQUEST_CODE)
+        }
+        val galleryIntent = {
             val intent = Intent(Intent.ACTION_PICK)
             intent.type = "image/*"
             intent.putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/jpeg", "image/png"))
-            startActivityForResult(intent, PICTURE_REQUEST_CODE)
-        } catch (e: ActivityNotFoundException) { }
+            startActivityForResult(intent, GALLERY_PICTURE_REQUEST_CODE)
+        }
+        MaterialAlertDialogBuilder(fragmentContext)
+            .setItems(arrayOf("Gallery", "Camera")) { _, which ->
+                when (which) {
+                    0 -> galleryIntent()
+                    1 -> cameraIntent()
+                }
+            }
+            .show()
     }
+    private fun userSelectPicture(id: String) {
+        val cameraIntent = {
+            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            intent.putExtra("id", id)
+            startActivityForResult(intent, PET_PICTURE_REQUEST_CODE)
+        }
+        val galleryIntent = {
+            val intent = Intent(Intent.ACTION_PICK)
+            intent.type = "image/*"
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/jpeg", "image/png"))
+            startActivityForResult(intent, PET_PICTURE_REQUEST_CODE)
+        }
+        MaterialAlertDialogBuilder(this)
+            .setItems(arrayOf("Gallery", "Camera")) { dialog, which ->
+                when (which) {
+                    0 -> galleryIntent()
 
+                    1 -> cameraIntent()
+
+                }
+            }
+            .show()
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data);
-        val userId = firebaseAuth.currentUser?.uid.toString()
         if (requestCode == PICTURE_REQUEST_CODE && resultCode == RESULT_OK) {
             var selectedImage: Uri? = data?.getData();
             if (selectedImage != null) {
                 val userId = firebaseAuth.currentUser?.uid.toString()
-                storage.reference.child("profile/$userId").putFile(selectedImage)
-                    .addOnSuccessListener {
-                        loadImageIntoImageView("profile/$userId")
-                    }
-            }
-        }
-        if (requestCode == GALLERY_PICTURE_REQUEST_CODE && resultCode == RESULT_OK) {
-            var selectedImage: Uri? = data?.getData();
-            if (selectedImage != null) {
-                storage.reference.child("profile/$userId/test").putFile(selectedImage)
-                GlideApp.with(this)
-                    .load(storage.reference.child("profile/$userId/test"))
-                    .centerCrop()
-                    .circleCrop()
-                    .error(
-                        Glide.with(this)
-                            .load(getDrawable(R.mipmap.ic_launcher_round))
-                    )
+                val url = "profile/$userId"
+                storage.reference.child(url).delete().addOnCompleteListener {
+                    storage.reference.child(url).putFile(selectedImage)
+                        .addOnSuccessListener {
+                            profileImage = findViewById(R.id.profile_image)
+                            GlideApp.with(this)
+                                .load(selectedImage)
+                                .centerCrop()
+                                .circleCrop()
+                                .error(R.drawable.ic_baseline_close_24)
+                                .into(profileImage)
+                        }.addOnFailureListener { e ->
+                            Log.e("Help", e.localizedMessage.toString())
 
-                    .into(profileImage);
+                        }
+
+                }
             }
         }
+            if (requestCode == GALLERY_PICTURE_REQUEST_CODE && resultCode == RESULT_OK) {
+                val url = "pet-pictures/${galleryViewModel.petPictureId}"
+                val selectedImage: Uri? = data?.getData();
+                if (selectedImage != null) {
+                    storage.reference.child(url).delete().addOnCompleteListener {
+                        storage.reference.child(url).putFile(selectedImage).addOnCompleteListener{
+                            galleryViewModel.galleryDialogFragment.updatePicture(selectedImage)
+                        }
+                    }
+                }
+
+            }
+            if (requestCode == PET_PICTURE_REQUEST_CODE && resultCode == RESULT_OK) {
+
+                val url = "pet-profile/$petId)} "
+                var selectedImage: Uri? = data?.getData();
+                if (selectedImage != null) {
+                    storage.reference.child(url).delete().addOnCompleteListener() {
+                        storage.reference.child(url).putFile(selectedImage).addOnSuccessListener {
+                            petInfoViewModel.petInfoAdapter.reloadImage(petInfoViewModel.updateProfileIndex,url)
+
+                        }
+                    }
+                }
+            }
+        }
+
+    override fun setGalleryImage(context: Context) {
+        userSelectPictureGallery(context)
     }
 
 }
