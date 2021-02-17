@@ -8,9 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.widget.ArrayAdapter
-import android.widget.AutoCompleteTextView
-import android.widget.TextView
+import android.widget.*
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.auth.ktx.auth
@@ -28,6 +26,8 @@ class PetDialogFragment(
     lateinit var petTypeTextBox: TextView
     lateinit var petBreedTextBox: TextView
     lateinit var petAgeTextBox: TextView
+    lateinit var saveButton: Button
+    lateinit var cancelButton: ImageView
 
     override fun onStart() {
         super.onStart()
@@ -60,6 +60,9 @@ class PetDialogFragment(
             (petTypeTextContainer.editText as? AutoCompleteTextView)?.setAdapter(adapter)
             petBreedTextBox = view.findViewById(R.id.pet_breed_edit_text)
             petAgeTextBox = view.findViewById(R.id.pet_age_text)
+            petAgeTextBox = view.findViewById(R.id.pet_age_text)
+            saveButton = view.findViewById(R.id.save_pet)
+            cancelButton = view.findViewById(R.id.cancel_dialog)
 
             var title = "Add Pet"
             if (petInfo.petId.isNotBlank()) {
@@ -72,16 +75,16 @@ class PetDialogFragment(
                 )
             }
 
+            saveButton.setOnClickListener {
+                setPetInfo(nameTextBox, petTypeTextBox, petBreedTextBox, petAgeTextBox)
+                petInfoViewModel.writePetInfoToDb(petInfo)
+            }
+            cancelButton.setOnClickListener{
+                dialog?.dismiss()
+            }
+
             builder.setView(view)
                 .setTitle(title)
-                .setPositiveButton(
-                    "Save"
-                ) { _, _ ->
-                    setPetInfo(nameTextBox, petTypeTextBox, petBreedTextBox, petAgeTextBox)
-                    petInfoViewModel.writePetInfoToDb(petInfo)
-                }
-                .setNegativeButton("Cancel") { _, _ -> dialog?.cancel() }
-
 
             builder.create()
 
