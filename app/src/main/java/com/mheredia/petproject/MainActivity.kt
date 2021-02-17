@@ -32,6 +32,7 @@ import com.mheredia.petproject.ui.login.LoginActivity
 import com.mheredia.petproject.ui.petInfo.PetInfoFragment
 import com.mheredia.petproject.ui.reminders.ReminderFragment
 import com.mheredia.petproject.ui.utils.NotificationUtils
+import kotlinx.coroutines.tasks.await
 import java.util.*
 
 
@@ -54,6 +55,7 @@ class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface,
 
         val REQUEST_IMAGE_CAPTURE = 1
         val PICTURE_REQUEST_CODE = 500
+        val GALLERY_PICTURE_REQUEST_CODE = 400
 
 
     }
@@ -64,7 +66,6 @@ class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface,
         val toolbar: Toolbar = findViewById(R.id.toolbar)
 
         setSupportActionBar(toolbar)
-        //notificaiton
         NotificationUtils().createNotificationChannel(
             this,
             NotificationManagerCompat.IMPORTANCE_DEFAULT, false,
@@ -140,6 +141,8 @@ class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface,
     private fun loadImageIntoImageView(profileImageDownloadUrl: String) {
         GlideApp.with(this)
             .load(storage.reference.child(profileImageDownloadUrl))
+            .centerCrop()
+            .circleCrop()
             .error(
                 Glide.with(this)
                     .load(getDrawable(R.mipmap.ic_launcher_round))
@@ -182,6 +185,38 @@ class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface,
             intent.putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/jpeg", "image/png"))
             startActivityForResult(intent, PICTURE_REQUEST_CODE)
         } catch (e: ActivityNotFoundException) { }
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data);
+        val userId = firebaseAuth.currentUser?.uid.toString()
+        if (requestCode == PICTURE_REQUEST_CODE && resultCode == RESULT_OK) {
+            var selectedImage: Uri? = data?.getData();
+            if (selectedImage != null) {
+                val userId = firebaseAuth.currentUser?.uid.toString()
+                storage.reference.child("profile/$userId").putFile(selectedImage)
+                    .addOnSuccessListener {
+                        loadImageIntoImageView("profile/$userId")
+                    }
+            }
+        }
+        if (requestCode == GALLERY_PICTURE_REQUEST_CODE && resultCode == RESULT_OK) {
+            var selectedImage: Uri? = data?.getData();
+            if (selectedImage != null) {
+                storage.reference.child("profile/$userId/test").putFile(selectedImage)
+                GlideApp.with(this)
+                    .load(storage.reference.child("profile/$userId/test"))
+                    .centerCrop()
+                    .circleCrop()
+                    .error(
+                        Glide.with(this)
+                            .load(getDrawable(R.mipmap.ic_launcher_round))
+                    )
+
+                    .into(profileImage);
+            }
+        }
     }
 
 }
