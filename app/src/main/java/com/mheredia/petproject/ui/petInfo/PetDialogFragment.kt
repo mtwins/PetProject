@@ -60,8 +60,6 @@ class PetDialogFragment(
                     petInfoViewModel.writePetInfoToDb(petInfo)
                 }
                 .setNegativeButton("Cancel") { _, _ -> dialog?.cancel() }
-
-
             builder.create()
 
 

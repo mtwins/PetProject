@@ -24,8 +24,8 @@ import kotlinx.coroutines.tasks.await
 
 class ContactsAdapter(
     var result: MutableList<Contact>,
-    var openEmail:  (email: String) -> Unit,
-    var openPhone:  (phone: String) -> Unit,
+    var openEmail: (email: String) -> Unit,
+    var openPhone: (phone: String) -> Unit,
     var openDialog: (contact: Contact) -> Unit
 ) :
     RecyclerView.Adapter<ContactsAdapter.ViewHolder>() {
@@ -36,10 +36,10 @@ class ContactsAdapter(
     }
 
     fun editContact(contact: Contact) {
-        var position=0
+        var position = 0
         for (item in result) {
-            if(item.contactId==contact.contactId){
-                result[position]=contact
+            if (item.contactId == contact.contactId) {
+                result[position] = contact
                 break
             }
             position++
@@ -68,10 +68,10 @@ class ContactsAdapter(
         holder.subTitle.text = result[position].notes
 
         holder.emailImage.setOnClickListener {
-            openEmail(result[position].email )
+            openEmail(result[position].email)
         }
         holder.phoneImage.setOnClickListener {
-            openPhone(result[position].phone )
+            openPhone(result[position].phone)
         }
     }
 
@@ -91,16 +91,19 @@ class ContactsAdapter(
 
             itemView.setOnClickListener {
                 var position: Int = getAdapterPosition()
-                val contact = Contact(
-                    Firebase.auth.currentUser?.uid.toString(),
-                    result[position].name,
-                    result[position].phone,
-                    result[position].email,
-                    result[position].notes,
-                    result[position].contactId
-                )
-                openDialog(contact)
+                with(result[position]) {
+                    val contact = Contact(
+                        Firebase.auth.currentUser?.uid.toString(),
+                        name,
+                        phone,
+                        email,
+                        notes,
+                        contactId
+                    )
+                    openDialog(contact)
+                }
             }
+
         }
     }
 
