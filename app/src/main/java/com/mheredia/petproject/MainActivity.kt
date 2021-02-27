@@ -29,6 +29,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import com.mheredia.petproject.data.model.PetPicture
 import com.mheredia.petproject.ui.contacts.ContactsFragment
 import com.mheredia.petproject.ui.gallery.GalleryFragment
 import com.mheredia.petproject.ui.gallery.GalleryViewModel
@@ -60,13 +61,9 @@ class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface,
         }
 
         val storage = Firebase.storage
-
-        val REQUEST_IMAGE_CAPTURE = 1
-        val PICTURE_REQUEST_CODE = 500
-        val PET_PICTURE_REQUEST_CODE = 300
-        val GALLERY_PICTURE_REQUEST_CODE = 400
-
-
+        const val PICTURE_REQUEST_CODE = 500
+        const val PET_PICTURE_REQUEST_CODE = 300
+        const val GALLERY_PICTURE_REQUEST_CODE = 400
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -193,7 +190,7 @@ class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface,
         } catch (e: ActivityNotFoundException) {
         }
     }
-    private fun userSelectPictureGallery(fragmentContext:Context) {
+    private fun userSelectPictureGallery(fragmentContext: Context) {
         val cameraIntent = {
             val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
             startActivityForResult(intent, GALLERY_PICTURE_REQUEST_CODE)
@@ -229,9 +226,7 @@ class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface,
             .setItems(arrayOf("Gallery", "Camera")) { dialog, which ->
                 when (which) {
                     0 -> galleryIntent()
-
                     1 -> cameraIntent()
-
                 }
             }
             .show()
@@ -277,20 +272,34 @@ class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface,
             if (requestCode == PET_PICTURE_REQUEST_CODE && resultCode == RESULT_OK) {
 
                 val url = "pet-profile/$petId)} "
-                var selectedImage: Uri? = data?.getData();
-                if (selectedImage != null) {
-                    storage.reference.child(url).delete().addOnCompleteListener() {
-                        storage.reference.child(url).putFile(selectedImage).addOnSuccessListener {
-                            petInfoViewModel.petInfoAdapter.reloadImage(petInfoViewModel.updateProfileIndex,url)
-
-                        }
-                    }
-                }
+                setPetPicture(data, url)
             }
         }
 
+    private fun setPetPicture(data: Intent?, url: String) {
+        var selectedImage: Uri? = data?.getData();
+        if (selectedImage != null) {
+            storage.reference.child(url).delete().addOnCompleteListener() {
+                storage.reference.child(url).putFile(selectedImage).addOnSuccessListener {
+                    petInfoViewModel.petInfoAdapter.reloadImage(
+                        petInfoViewModel.updateProfileIndex,
+                        url
+                    )
+
+                }
+            }
+        }
+    }
+
     override fun setGalleryImage(context: Context) {
         userSelectPictureGallery(context)
+    }
+
+    override fun shareGalleryImage(context: Context, picture: PetPicture) {
+        val share = Intent(Intent.ACTION_SEND)
+        share.type = "image/jpeg"
+        share.putExtra(Intent.EXTRA_STREAM, Uri.parse(picture.pictureUrl))
+        startActivity(Intent.createChooser(share, "Share Image"));
     }
 
 }

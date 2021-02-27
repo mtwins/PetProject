@@ -76,6 +76,15 @@ class GalleryViewModel : ViewModel() {
         mCallback.setGalleryImage(context)
     }
 
+    fun shareGalleryImage(
+        activity: FragmentActivity,
+        context: Context,
+        picture:PetPicture
+    ) {
+        var mCallback = activity as GalleryFragment.GalleryInterface
+        mCallback.shareGalleryImage(context, picture)
+    }
+
     fun deletePictureFromDb(position: Int){
         var picture= galleryAdapter.result[position]
         viewModelScope.launch {

@@ -1,6 +1,7 @@
 package com.mheredia.petproject.ui.gallery
 
 import android.content.Context
+import android.graphics.Picture
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,10 +10,12 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.FragmentActivity
 import androidx.palette.graphics.Palette
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.mheredia.petproject.GlideApp
 import com.mheredia.petproject.MainActivity
 import com.mheredia.petproject.R
@@ -22,7 +25,12 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 
-class GalleryAdapter(var result: MutableList<PetPicture>, var context: Context) :
+class GalleryAdapter(
+    var result: MutableList<PetPicture>,
+    var context: Context,
+    var viewModel: GalleryViewModel,
+    var galleryFragment: FragmentActivity
+) :
     RecyclerView.Adapter<GalleryAdapter.ViewHolder>() {
     fun addPicture(petPicture: PetPicture) {
         result.add(petPicture)
@@ -107,15 +115,15 @@ class GalleryAdapter(var result: MutableList<PetPicture>, var context: Context) 
 
 
             itemView.setOnClickListener {
-//                var position: Int = getAdapterPosition()
-//                val picture = Picture(
-//                    Firebase.auth.currentUser?.uid.toString(),
-//                    result[position].name,
-//                    result[position].phone,
-//                    result[position].email,
-//                    result[position].notes,
-//                    result[position].contactId
-//                )
+                var position: Int = getAdapterPosition()
+                val picture = PetPicture(
+                    result[position].petId,
+                    result[position].pictureId,
+                    Firebase.auth.currentUser?.uid!!,
+                    result[position].pictureTag,
+                    result[position].pictureUrl
+                )
+                viewModel.shareGalleryImage(galleryFragment,context,picture)
 //                openDialog(picture)
             }
         }

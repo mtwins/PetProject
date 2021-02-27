@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -25,6 +24,7 @@ class GalleryFragment : Fragment() {
 
     interface GalleryInterface {
         fun setGalleryImage(context: Context)
+        fun shareGalleryImage(context: Context, picture: PetPicture)
     }
 
     companion object {
@@ -55,7 +55,9 @@ class GalleryFragment : Fragment() {
             galleryViewModel.galleryAdapter =
                 GalleryAdapter(
                     result.toMutableList(),
-                    requireContext()
+                    requireContext(),
+                    galleryViewModel,
+                    this.requireActivity()
                 )
             pet_pictures_list.apply {
                 layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
