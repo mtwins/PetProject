@@ -4,15 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/secondaryColor"
     tools:context=".ui.registration.RegistrationFragment">
-
+    <ImageView
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:id="@+id/cancel_dialog"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_baseline_close_24" />
 
         <LinearLayout
             android:id="@+id/addTagHolder"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/cancel_dialog"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:layout_gravity="top"
             android:layout_margin="30dp"
             android:orientation="vertical">
@@ -40,8 +46,16 @@
                 android:layout_height="200dp"
                 android:src="@drawable/ic_menu_camera"
                 android:scaleType="centerCrop" />
+            <Button
+                android:layout_marginTop="15dp"
+                android:id="@+id/save_pet_picture"
+                style="@style/Widget.MaterialComponents.Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/save" />
 
         </LinearLayout>
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

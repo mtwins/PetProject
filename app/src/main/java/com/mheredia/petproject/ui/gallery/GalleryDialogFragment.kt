@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
@@ -34,25 +35,18 @@ class GalleryDialogFragment(
     DialogFragment() {
 
     lateinit var petPictureImage: ImageView
-    override fun onStart() {
-        super.onStart()
-        val dialog = dialog
-        if (dialog != null) {
-            val width = ViewGroup.LayoutParams.MATCH_PARENT
-            val height = ViewGroup.LayoutParams.MATCH_PARENT
-            dialog.window!!.setLayout(width, height)
-        }
-    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
         return activity?.let {
-            val builder = AlertDialog.Builder(it)
+            val builder = AlertDialog.Builder(it, R.style.FullScreenDialog )
             val inflater = requireActivity().layoutInflater;
             val view = inflater.inflate(R.layout.dialog_add_picture, null)
 
             petPictureImage = view.findViewById(R.id.add_pet_image)
             val tag: TextView = view.findViewById(R.id.add_tag)
+            val saveButton: Button = view.findViewById(R.id.save_pet_picture)
+            val cancelButton: ImageView = view.findViewById(R.id.cancel_dialog)
             var picturesRef = Firebase.firestore.collection("pictures").document()
             petPicture.pictureId = picturesRef.id
 
@@ -72,24 +66,19 @@ class GalleryDialogFragment(
                 }
 
             }
+            saveButton.setOnClickListener {
+                petPicture.pictureTag = tag.text.toString()
+                petPicture.userId = Firebase.auth.currentUser?.uid.toString()
+                petPicture.pictureUrl = "pet-pictures/${petPicture.pictureId}"
+                galleryViewModel.addPictureToDb(petPicture, picturesRef)
+                dialog?.cancel()
+            }
+            cancelButton.setOnClickListener {
+                dialog?.cancel()
+            }
 
             builder.setView(view)
                 .setTitle(title)
-                .setPositiveButton(
-                    "Save"
-                ) { dialog, id ->
-                    petPicture.pictureTag = tag.text.toString()
-                    petPicture.userId = Firebase.auth.currentUser?.uid.toString()
-
-                    petPicture.pictureUrl = "pet-pictures/${petPicture.pictureId}"
-                    galleryViewModel.addPictureToDb(petPicture, picturesRef)
-                }
-                .setNegativeButton("Cancel",
-                    DialogInterface.OnClickListener { dialog, id ->
-                        getDialog()?.cancel()
-                    })
-
-
             builder.create()
 
 

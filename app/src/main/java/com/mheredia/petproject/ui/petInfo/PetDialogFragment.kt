@@ -29,22 +29,6 @@ class PetDialogFragment(
     lateinit var saveButton: Button
     lateinit var cancelButton: ImageView
 
-    override fun onStart() {
-        super.onStart()
-//        val dialog = dialog
-//        if (dialog != null) {
-//            val width = ViewGroup.LayoutParams.MATCH_PARENT
-//            val height = ViewGroup.LayoutParams.MATCH_PARENT
-//            dialog.window!!.setLayout(width, height)
-//        }
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-//        setStyle(STYLE_NORMAL, R.style.FullScreenDialog)
-    }
-
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
         val dialog: Dialog = activity?.let {
@@ -78,6 +62,7 @@ class PetDialogFragment(
             saveButton.setOnClickListener {
                 setPetInfo(nameTextBox, petTypeTextBox, petBreedTextBox, petAgeTextBox)
                 petInfoViewModel.writePetInfoToDb(petInfo)
+                dialog?.cancel()
             }
             cancelButton.setOnClickListener{
                 dialog?.dismiss()

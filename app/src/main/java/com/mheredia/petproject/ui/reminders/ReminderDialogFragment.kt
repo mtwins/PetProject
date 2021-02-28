@@ -6,7 +6,9 @@ import android.app.TimePickerDialog
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.DatePicker
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -23,26 +25,19 @@ class ReminderDialogFragment(
    var reminderViewModel: ReminderViewModel
 ) :
     DialogFragment() {
-    override fun onStart() {
-        super.onStart()
-        val dialog = dialog
-        if (dialog != null) {
-            val width = ViewGroup.LayoutParams.MATCH_PARENT
-            val height = ViewGroup.LayoutParams.MATCH_PARENT
-            dialog.window!!.setLayout(width, height)
-        }
-    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
         return activity?.let {
-            val builder = MaterialAlertDialogBuilder(it)
+            val builder = MaterialAlertDialogBuilder(it, R.style.FullScreenDialog)
             val inflater = requireActivity().layoutInflater;
             val view = inflater.inflate(R.layout.dialog_reminder, null)
 
             val nameTextBox: TextView = view.findViewById(R.id.reminder_name)
             val dateTextBox: TextView = view.findViewById(R.id.reminder_date)
             val timeTextBox: TextView = view.findViewById(R.id.reminder_time)
+            val saveButton: Button = view.findViewById(R.id.save_reminder)
+            val cancelButton: ImageView = view.findViewById(R.id.cancel_dialog)
             var calender= Calendar.getInstance()
 
             var title = "Add Reminder"
@@ -54,23 +49,19 @@ class ReminderDialogFragment(
             }
             setDateTextOnClickListener(dateTextBox, calender)
             setTimeTextOnClickListener(timeTextBox, calender)
-
+            saveButton.setOnClickListener {
+                reminder.name=nameTextBox.text.toString()
+                reminder.date= dateTextBox.text.toString()
+                reminder.time=timeTextBox.text.toString()
+                reminder.userId=Firebase.auth.currentUser?.uid.toString()
+                reminderViewModel.writeReminderToDb(reminder, calender, this.requireActivity())
+                dialog?.cancel()
+            }
+            cancelButton.setOnClickListener {
+                dialog?.cancel()
+            }
             builder.setView(view)
                 .setTitle(title)
-                .setPositiveButton(
-                    "Save"
-                ) { dialog, id ->
-                    reminder.name=nameTextBox.text.toString()
-                    reminder.date= dateTextBox.text.toString()
-                    reminder.time=timeTextBox.text.toString()
-                    reminder.userId=Firebase.auth.currentUser?.uid.toString()
-                    reminderViewModel.writeReminderToDb(reminder, calender, this.requireActivity())
-                }
-                .setNegativeButton("Cancel",
-                    DialogInterface.OnClickListener { dialog, id ->
-                        getDialog()?.cancel()
-                    })
-
 
             builder.create()
 
