@@ -43,7 +43,7 @@
             android:layout_toRightOf="@+id/card_image"
             android:layout_margin="15dp"
             android:layout_width="wrap_content"
-            android:gravity="center|center_vertical"
+            android:gravity="center_vertical"
             android:orientation="vertical"
             android:layout_height="wrap_content"
             >
@@ -70,8 +70,27 @@
                 android:layout_height="wrap_content"
                 android:text="test" />
 
-        </LinearLayout>
 
+        </LinearLayout>
+        <ImageView
+            android:id="@+id/medicine_button"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="5dp"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/vaccine_button"
+            android:src="@drawable/ic_baseline_medical_services_24"
+            />
+
+        <ImageView
+            android:id="@+id/vaccine_button"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="5dp"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_syringe"
+            />
     </RelativeLayout>
 
 </com.google.android.material.card.MaterialCardView>
