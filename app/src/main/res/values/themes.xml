@@ -22,6 +22,7 @@
     <style name="Theme.PetProject.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.PetProject.PopupOverlay" parent="Theme.AppCompat.Light.DialogWhenLarge" />
+
     <style name="FullScreenDialog" parent="Theme.AppCompat.Light.DialogWhenLarge">
         <item name="android:statusBarColor">@color/primaryColor</item>
         <item name="windowNoTitle">true</item>

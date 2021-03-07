@@ -4,19 +4,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import androidx.activity.viewModels
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mheredia.petproject.R
+import com.mheredia.petproject.data.model.MedicalInfo
 import com.mheredia.petproject.data.model.PetInfo
+import com.mheredia.petproject.ui.petInfo.medical.MedicalHome
+import com.mheredia.petproject.ui.petInfo.vaccine.VaccineHome
 import com.mheredia.petproject.ui.utils.SwipeToDeleteCallback
 
 class PetInfoFragment : Fragment() {
@@ -53,7 +52,9 @@ class PetInfoFragment : Fragment() {
                 PetInfoAdapter(
                     result.toMutableList(),
                     ::openPetInfoDialog,
-                    ::selectPetProfile
+                    ::selectPetProfile,
+                    ::startVaccineActivity,
+                    ::startMedicineActivity
                 )
 
             pet_list.apply {
@@ -72,6 +73,15 @@ class PetInfoFragment : Fragment() {
             PetDialogFragment(petInfo, petInfoViewModel).show(it, "")
         }
     }
+
+    private fun startVaccineActivity(petId: String){
+        startActivity(VaccineHome.newIntent(this.requireContext(), petId))
+    }
+
+    private fun startMedicineActivity(petId: String){
+        startActivity(MedicalHome.newIntent(this.requireContext(), petId))
+    }
+
     private fun selectPetProfile(petId:String, index: Int){
         petInfoViewModel.setPetProfile(this.requireActivity(), petId , index)
     }

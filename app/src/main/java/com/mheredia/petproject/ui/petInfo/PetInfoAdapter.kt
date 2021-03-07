@@ -15,12 +15,14 @@ import com.mheredia.petproject.GlideApp
 import com.mheredia.petproject.MainActivity
 import com.mheredia.petproject.R
 import com.mheredia.petproject.data.model.PetInfo
-import kotlinx.coroutines.tasks.await
 
 class PetInfoAdapter(
     var result: MutableList<PetInfo>,
     var openDialog: (petInfo: PetInfo) -> Unit,
-    var selectPetProfile: (petId:String, index:Int) -> Unit
+    var selectPetProfile: (petId: String, index: Int) -> Unit,
+    var openVaccineInfo: (petId: String) -> Unit,
+    var openMedicineInfo: (petId: String) -> Unit
+
 ) :
     RecyclerView.Adapter<PetInfoAdapter.ViewHolder>() {
 
@@ -62,6 +64,12 @@ class PetInfoAdapter(
         holder.title.text = result[position].petName
         holder.subTitle.text = result[position].petBreed
         holder.subTitle2.text = "${result[position].petAge} years old"
+        holder.vaccineButton.setOnClickListener {
+            openVaccineInfo(result[position].petId)
+        }
+        holder.medicineButton.setOnClickListener {
+            openMedicineInfo(result[position].petId)
+        }
 
         holder.petImage.setOnClickListener {
             selectPetProfile( result[position].petId ,position)
@@ -98,6 +106,8 @@ class PetInfoAdapter(
         var subTitle: TextView
         var subTitle2: TextView
         var petImage: ImageView
+        var vaccineButton: ImageView
+        var medicineButton: ImageView
 
 
         init {
@@ -106,6 +116,9 @@ class PetInfoAdapter(
             subTitle = itemView.findViewById(R.id.card_subtitle)
             subTitle2 = itemView.findViewById(R.id.card_subtitle_2)
             petImage = itemView.findViewById(R.id.pet_image)
+            vaccineButton = itemView.findViewById(R.id.vaccine_button)
+            medicineButton = itemView.findViewById(R.id.medicine_button)
+
 
             itemView.setOnClickListener {
                 var position: Int = getAdapterPosition()
