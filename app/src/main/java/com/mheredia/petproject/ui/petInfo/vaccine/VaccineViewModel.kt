@@ -14,13 +14,13 @@ import kotlinx.coroutines.tasks.await
 
 class VaccineViewModel : ViewModel() {
     lateinit var vaccineAdapter: VaccineAdapter
-    val vaccineInfo = MutableLiveData<List<Vaccine>>()
+    var vaccineInfo = MutableLiveData<List<Vaccine>>()
     private val db = Firebase.firestore
     private val _text = MutableLiveData<String>().apply {
         value = "This is pet info Fragment"
     }
 
-    fun getPetInfo(petId: String) {
+    fun getVaccineInfo(petId: String) {
         viewModelScope.launch {
             vaccineInfo.value = getVaccineForPet(petId)
         }
@@ -28,7 +28,7 @@ class VaccineViewModel : ViewModel() {
 
     suspend fun getVaccineForPet(petId: String): List<Vaccine> =
         Firebase.firestore.collection("vaccines")
-            .whereEqualTo("vaccineId", petId)
+            .whereEqualTo("petId", petId)
             .get()
             .await()
             .toObjects(Vaccine::class.java)
@@ -60,11 +60,11 @@ class VaccineViewModel : ViewModel() {
         vaccineAdapter.editVaccine(vaccine)
     }
 
-    fun deletePetFromDb(position: Int){
-        var contact= vaccineAdapter.result[position]
+    fun deleteVaccineFromDb(position: Int){
+        var vaccine= vaccineAdapter.result[position]
         viewModelScope.launch {
             Firebase.firestore.collection("vaccines")
-                .document(contact.petId)
+                .document(vaccine.vaccineId)
                 .delete().await()
             vaccineAdapter.deleteContact(position)
         }

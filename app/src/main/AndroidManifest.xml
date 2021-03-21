@@ -17,7 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PetProject">
         <activity
-            android:name=".ui.petInfo.vaccine.VaccineHome"
+            android:name=".ui.petInfo.vaccine.VaccineHomeActivity"
             android:label="@string/title_activity_add_vaccine"
             android:theme="@style/Theme.PetProject.NoActionBar"></activity>
         <activity

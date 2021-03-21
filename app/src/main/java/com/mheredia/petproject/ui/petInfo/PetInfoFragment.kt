@@ -12,10 +12,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mheredia.petproject.R
-import com.mheredia.petproject.data.model.MedicalInfo
 import com.mheredia.petproject.data.model.PetInfo
 import com.mheredia.petproject.ui.petInfo.medical.MedicalHome
-import com.mheredia.petproject.ui.petInfo.vaccine.VaccineHome
+import com.mheredia.petproject.ui.petInfo.vaccine.VaccineHomeActivity
 import com.mheredia.petproject.ui.utils.SwipeToDeleteCallback
 
 class PetInfoFragment : Fragment() {
@@ -75,7 +74,7 @@ class PetInfoFragment : Fragment() {
     }
 
     private fun startVaccineActivity(petId: String){
-        startActivity(VaccineHome.newIntent(this.requireContext(), petId))
+        startActivity(VaccineHomeActivity.newIntent(this.requireContext(), petId))
     }
 
     private fun startMedicineActivity(petId: String){
