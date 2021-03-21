@@ -49,7 +49,7 @@ class ViewVaccineFragment(var petId: String) : Fragment() {
         vaccine_list: RecyclerView,
         root: View
     ) {
-        if (vaccine_list.size == 0) {
+        if (vaccine_list.size > 0) {
             var vaccineMessage = root.findViewById<TextView>(R.id.no_vaccine_message)
             vaccineMessage.visibility = View.GONE
         }

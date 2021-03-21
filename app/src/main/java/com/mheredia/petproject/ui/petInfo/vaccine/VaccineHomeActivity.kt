@@ -10,7 +10,6 @@ import com.mheredia.petproject.R
 
 
 class VaccineHomeActivity : AppCompatActivity() {
-    val test=""
     var petId=""
     companion object {
         fun newIntent(context: Context, petId: String): Intent {
@@ -19,9 +18,13 @@ class VaccineHomeActivity : AppCompatActivity() {
             }
         }
     }
-    override fun onResume() {
-        super.onResume()
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        onBackPressed()
+        return true
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_vaccine)

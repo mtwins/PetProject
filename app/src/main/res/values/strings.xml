@@ -39,7 +39,7 @@
     <string name="logout">Logout</string>
     <string name="pet_type">Pet Type</string>
     <string name="save">Save</string>
-    <string name="title_activity_add_vaccine">AddVaccine</string>
+    <string name="title_activity_add_vaccine">View Vaccines</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
@@ -50,4 +50,6 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
     <string name="vaccine_date">Vaccine Date</string>
     <string name="vaccine_name">Vaccine Name</string>
+    <string name="list_medications">List Medications</string>
+    <string name="care_instructions">Care Instructions</string>
 </resources>

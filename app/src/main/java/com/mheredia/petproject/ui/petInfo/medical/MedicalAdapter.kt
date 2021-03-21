@@ -42,7 +42,7 @@ class MedicalAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val v = LayoutInflater.from(parent.context)
-            .inflate(R.layout.pet_card, parent, false)
+            .inflate(R.layout.medical_card, parent, false)
         return ViewHolder(v)
     }
 
@@ -51,27 +51,9 @@ class MedicalAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-//        holder.title.text = result[position].petName
-//        holder.subTitle.text = result[position].petBreed
-//        holder.subTitle2.text = "${result[position].petAge} years old"
-
-//        holder.petImage.setOnClickListener {
-//            selectPetProfile( result[position].petId ,position)
-//        }
-//        if(!result[position].profileUrl.isNullOrEmpty()) {
-//            GlideApp.with(holder.itemView.context)
-//                .load(MainActivity.storage.reference.child(result[position].profileUrl))
-//                .centerCrop()
-//                .circleCrop()
-//                .error(
-//                    Glide.with(holder.itemView.context)
-//                        .load(getDrawable(holder.itemView.context, R.drawable.ic_menu_camera))
-//                )
-//                .into(holder.petImage)
-//        }
-
-
-
+        holder.title.text = result[position].condition
+        holder.subTitle.text = result[position].medicines
+        holder.subTitle2.text = result[position].careInstructions
     }
 
 
@@ -91,18 +73,17 @@ class MedicalAdapter(
             petImage = itemView.findViewById(R.id.pet_image)
 
 
-//            itemView.setOnClickListener {
-//                var position: Int = getAdapterPosition()
-//                val vaccineInfo = Vaccine(
-//                    result[position].petId,
-//                    result[position].petName,
-//                    result[position].petType,
-//                    result[position].petBreed,
-//                    result[position].petAge,
-//                    Firebase.auth.uid.toString()
-//                )
-//                openDialog(vaccineInfo)
-//            }
+            itemView.setOnClickListener {
+                val position: Int = getAdapterPosition()
+                val medicalInfo = MedicalInfo(
+                    result[position].medicalId,
+                    result[position].condition,
+                    result[position].medicines,
+                    result[position].careInstructions,
+                    result[position].petId
+                )
+                openDialog(medicalInfo)
+            }
         }
     }
 

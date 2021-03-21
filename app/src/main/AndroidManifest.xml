@@ -21,8 +21,8 @@
             android:label="@string/title_activity_add_vaccine"
             android:theme="@style/Theme.PetProject.NoActionBar"></activity>
         <activity
-            android:name=".ui.petInfo.medical.MedicalHome"
-            android:label="@string/title_activity_add_vaccine"
+            android:name=".ui.petInfo.medical.MedicalHomeActivity"
+            android:label="View Medical Conditions"
             android:theme="@style/Theme.PetProject.NoActionBar"></activity>
         <activity
             android:name=".ui.login.LoginActivity"
