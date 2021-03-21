@@ -43,7 +43,7 @@
             <ImageView
                 android:id="@+id/add_pet_image"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="300dp"
                 android:src="@drawable/ic_menu_camera"
                 android:scaleType="centerCrop" />
             <Button

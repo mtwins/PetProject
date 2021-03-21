@@ -47,7 +47,7 @@ class GalleryFragment : Fragment() {
         galleryViewModel.getPictures()
         fab = root.findViewById(R.id.add_items)
         fab.setOnClickListener { view ->
-            openGallaryDialog()
+            openGalleryDialog()
         }
 
         var pet_pictures_list = root.findViewById<RecyclerView>(R.id.list_items)
@@ -57,7 +57,8 @@ class GalleryFragment : Fragment() {
                     result.toMutableList(),
                     requireContext(),
                     galleryViewModel,
-                    this.requireActivity()
+                    this.requireActivity(),
+                    this::openGalleryDialog
                 )
             pet_pictures_list.apply {
                 layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
@@ -70,7 +71,7 @@ class GalleryFragment : Fragment() {
         return root
     }
 
-    private fun openGallaryDialog(picture: PetPicture= PetPicture()) {
+    private fun openGalleryDialog(picture: PetPicture= PetPicture()) {
         galleryViewModel.galleryDialogFragment= GalleryDialogFragment(picture, requireContext(), galleryViewModel, this.requireActivity())
         activity?.supportFragmentManager?.let { galleryViewModel.galleryDialogFragment.show(it, "") }
         }

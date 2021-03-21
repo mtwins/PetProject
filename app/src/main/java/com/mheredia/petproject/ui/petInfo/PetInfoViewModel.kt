@@ -1,5 +1,6 @@
 package com.mheredia.petproject.ui.petInfo
 
+import android.content.Context
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,6 +9,8 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.mheredia.petproject.data.model.PetInfo
+import com.mheredia.petproject.data.model.PetPicture
+import com.mheredia.petproject.ui.gallery.GalleryFragment
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
@@ -79,5 +82,10 @@ class PetInfoViewModel : ViewModel() {
     ) {
         var mCallback = activity as PetInfoFragment.PetImageInterface
         mCallback.setPetImage( petId, index)
+    }
+
+    fun sharePetInfo(activity: FragmentActivity, context: Context, petInfo: PetInfo) {
+        var mCallback = activity as PetInfoFragment.PetImageInterface
+        mCallback.sharePetInfo(context, petInfo)
     }
 }

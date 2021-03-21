@@ -16,9 +16,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.ktx.storage
 import com.mheredia.petproject.GlideApp
 import com.mheredia.petproject.MainActivity
 import com.mheredia.petproject.R
+import com.mheredia.petproject.data.model.Contact
 import com.mheredia.petproject.data.model.PetPicture
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -29,7 +31,8 @@ class GalleryAdapter(
     var result: MutableList<PetPicture>,
     var context: Context,
     var viewModel: GalleryViewModel,
-    var galleryFragment: FragmentActivity
+    var galleryFragment: FragmentActivity,
+    var openDialog: (petPicture: PetPicture) -> Unit
 ) :
     RecyclerView.Adapter<GalleryAdapter.ViewHolder>() {
     fun addPicture(petPicture: PetPicture) {
@@ -67,9 +70,7 @@ class GalleryAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.tag.text = result[position].pictureTag
-        val picture =
-            "https://ichef.bbci.co.uk/news/1024/cpsprodpb/151AB/production/_111434468_gettyimages-1143489763.jpg"
-//            Firebase.storage.reference.child("profile/${Firebase.auth.currentUser?.uid.toString()}")
+        val picture = Firebase.storage.reference.child(result[position].pictureUrl)
         GlideApp.with(holder.itemView.context)
             .load(MainActivity.storage.reference.child(result[position].pictureUrl))
             .error(
@@ -84,18 +85,24 @@ class GalleryAdapter(
             .into(holder.petPicture)
 
         GlobalScope.launch(Dispatchers.IO) {
-            val bitmap = Glide.with(context)
-                .asBitmap()
-                .load(picture)
-                .submit(100, 100).get()
-            Palette.from(bitmap).generate { palette ->
-                palette?.getDarkVibrantColor(ContextCompat.getColor(context, android.R.color.black))
-                    .let { bgColor ->
-                        if (bgColor != null) {
-                            holder.tagHolder.setBackgroundColor(bgColor)
+            try {
+                val bitmap = Glide.with(context)
+                    .asBitmap()
+                    .load(picture)
+                    .submit(100, 100).get()
+
+                Palette.from(bitmap).generate { palette ->
+                    palette?.getDarkMutedColor(ContextCompat.getColor(context, android.R.color.black))
+                        .let { bgColor ->
+                            if (bgColor != null) {
+                                holder.tagHolder.setBackgroundColor(bgColor)
+                            }
                         }
-                    }
+                }
+            }catch (e:Exception) {
+
             }
+
 
         }
     }
@@ -112,20 +119,25 @@ class GalleryAdapter(
             tag = itemView.findViewById(R.id.tag)
             tagHolder = itemView.findViewById(R.id.tagHolder)
             petPicture = itemView.findViewById(R.id.petImage)
-
-
             itemView.setOnClickListener {
-                var position: Int = getAdapterPosition()
-                val picture = PetPicture(
-                    result[position].petId,
-                    result[position].pictureId,
-                    Firebase.auth.currentUser?.uid!!,
-                    result[position].pictureTag,
-                    result[position].pictureUrl
-                )
-                viewModel.shareGalleryImage(galleryFragment,context,picture)
-//                openDialog(picture)
+                openDialog( petPicture(adapterPosition))
+
             }
+            itemView.setOnLongClickListener {
+            viewModel.shareGalleryImage(galleryFragment,context,petPicture(adapterPosition))
+                true
+            }
+        }
+
+        private fun petPicture(position:Int): PetPicture {
+            val picture = PetPicture(
+                result[position].petId,
+                result[position].pictureId,
+                Firebase.auth.currentUser?.uid!!,
+                result[position].pictureTag,
+                result[position].pictureUrl
+            )
+            return picture
         }
     }
 

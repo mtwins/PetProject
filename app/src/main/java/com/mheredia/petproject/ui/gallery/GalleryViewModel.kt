@@ -57,8 +57,8 @@ class GalleryViewModel : ViewModel() {
             .addOnFailureListener { e -> Log.w("ContactError", "Error writing document", e) }
     }
     fun updatePictureToDb(petPicture: PetPicture) {
-        var contactsRef= db.collection("pictures")
-        contactsRef
+        var picturesRef= db.collection("pictures")
+        picturesRef
             .document(petPicture.pictureId)
             .set(petPicture)
             .addOnSuccessListener {

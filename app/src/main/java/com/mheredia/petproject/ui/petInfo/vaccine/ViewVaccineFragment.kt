@@ -45,7 +45,7 @@ class ViewVaccineFragment(var petId: String) : Fragment() {
         vaccine_list: List<Vaccine>,
         root: View
     ) {
-        if (vaccine_list.size > 0) {
+        if (vaccine_list.isNotEmpty()) {
             var vaccineMessage = root.findViewById<TextView>(R.id.no_vaccine_message)
             vaccineMessage.visibility = View.GONE
         }

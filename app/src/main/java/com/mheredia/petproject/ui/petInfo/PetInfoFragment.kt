@@ -1,5 +1,6 @@
 package com.mheredia.petproject.ui.petInfo
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -25,6 +26,7 @@ class PetInfoFragment : Fragment() {
 
     interface PetImageInterface {
         fun setPetImage(petId: String, index: Int)
+        fun sharePetInfo(context: Context, petInfo: PetInfo)
     }
 
     override fun onResume() {
@@ -53,7 +55,10 @@ class PetInfoFragment : Fragment() {
                     ::openPetInfoDialog,
                     ::selectPetProfile,
                     ::startVaccineActivity,
-                    ::startMedicineActivity
+                    ::startMedicineActivity,
+                    petInfoViewModel,
+                    this.requireContext(),
+                    this.requireActivity()
                 )
 
             pet_list.apply {

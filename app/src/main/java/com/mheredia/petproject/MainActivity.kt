@@ -29,6 +29,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import com.mheredia.petproject.data.model.PetInfo
 import com.mheredia.petproject.data.model.PetPicture
 import com.mheredia.petproject.ui.contacts.ContactsFragment
 import com.mheredia.petproject.ui.gallery.GalleryFragment
@@ -190,6 +191,21 @@ class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface,
         } catch (e: ActivityNotFoundException) {
         }
     }
+
+    override fun sharePetInfo(context: Context, petInfo: PetInfo) {
+        val share = Intent(Intent.ACTION_SEND)
+        share.type = "plain/text"
+        share.putExtra(android.content.Intent.EXTRA_SUBJECT, "Pet Info on ${petInfo.petName}");
+        share.putExtra(android.content.Intent.EXTRA_TEXT, """
+            Pet Name: ${petInfo.petName}
+            Pet Type: ${petInfo.petType}
+            Pet Breed: ${petInfo.petBreed}
+            Pet Age: ${petInfo.petAge}
+        """.trimIndent());
+
+        startActivity(Intent.createChooser(share, "Share Pet Info"));
+    }
+
     private fun userSelectPictureGallery(fragmentContext: Context) {
         val cameraIntent = {
             val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)

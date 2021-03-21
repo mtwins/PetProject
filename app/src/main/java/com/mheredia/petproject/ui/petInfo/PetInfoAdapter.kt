@@ -1,11 +1,13 @@
 package com.mheredia.petproject.ui.petInfo
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.content.res.AppCompatResources.getDrawable
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.ktx.auth
@@ -21,9 +23,12 @@ class PetInfoAdapter(
     var openDialog: (petInfo: PetInfo) -> Unit,
     var selectPetProfile: (petId: String, index: Int) -> Unit,
     var openVaccineInfo: (petId: String) -> Unit,
-    var openMedicineInfo: (petId: String) -> Unit
+    var openMedicineInfo: (petId: String) -> Unit,
+    var viewModel: PetInfoViewModel,
+    var context: Context,
+    var petInfoFragment: FragmentActivity
 
-) :
+    ) :
     RecyclerView.Adapter<PetInfoAdapter.ViewHolder>() {
 
 
@@ -131,6 +136,19 @@ class PetInfoAdapter(
                     Firebase.auth.uid.toString()
                 )
                 openDialog(petInfo)
+            }
+            itemView.setOnLongClickListener {
+                var position: Int = getAdapterPosition()
+                val petInfo = PetInfo(
+                    result[position].petId,
+                    result[position].petName,
+                    result[position].petType,
+                    result[position].petBreed,
+                    result[position].petAge,
+                    Firebase.auth.uid.toString()
+                )
+                viewModel.sharePetInfo(petInfoFragment,context, petInfo)
+                true
             }
         }
     }
