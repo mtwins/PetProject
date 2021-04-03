@@ -9,8 +9,8 @@ import com.mheredia.petproject.model.CallResult
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
+
 class LoginViewModel : ViewModel() {
-    private var auth = Firebase.auth
     val userLogInResult: MutableLiveData<CallResult> by lazy {
         MutableLiveData<CallResult>()
     }
@@ -26,7 +26,7 @@ class LoginViewModel : ViewModel() {
         }else {
             viewModelScope.launch {
                 try {
-                    auth.signInWithEmailAndPassword(email, password).await()
+                    Firebase.auth.signInWithEmailAndPassword(email, password).await()
                     setCallRequestResult(CallResult(true))
                 } catch (ex: Exception) {
                     setCallRequestResult(CallResult(false, ex.localizedMessage.toString()))
@@ -44,5 +44,7 @@ class LoginViewModel : ViewModel() {
         !(isRequiredFieldEmpty(emailText) || isRequiredFieldEmpty(passwordText))
 
     private fun isRequiredFieldEmpty(text: String): Boolean =  text.isEmpty() || text.isBlank()
+
+
 
 }
