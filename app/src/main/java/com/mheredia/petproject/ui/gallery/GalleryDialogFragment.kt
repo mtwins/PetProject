@@ -70,7 +70,7 @@ class GalleryDialogFragment(
             }
             if (petPicture.pictureId.isBlank()) {
                 petPictureImage.setOnClickListener {
-                    if (tag.text.toString().isNotEmpty()) {
+                    if (tag.text.toString().isNotEmpty() ) {
                         picturesRef = Firebase.firestore.collection("pictures").document()
                         petPicture.pictureId = picturesRef.id
                         galleryViewModel.petPictureId = picturesRef.id
@@ -91,7 +91,7 @@ class GalleryDialogFragment(
                 petPicture.pictureTag = tag.text.toString()
                 petPicture.userId = Firebase.auth.currentUser?.uid.toString()
                 petPicture.pictureUrl = "pet-pictures/${petPicture.pictureId}"
-                if(petPicture.pictureId.isEmpty()) {
+                if(title.equals("Add Picture")) {
                     galleryViewModel.addPictureToDb(petPicture, picturesRef)
                 }else{
                     galleryViewModel.updatePictureToDb(petPicture)
