@@ -9,8 +9,6 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.mheredia.petproject.data.model.PetInfo
-import com.mheredia.petproject.data.model.PetPicture
-import com.mheredia.petproject.ui.gallery.GalleryFragment
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
@@ -69,7 +67,7 @@ class PetInfoViewModel : ViewModel() {
             Firebase.firestore.collection("pets")
                 .document(contact.petId)
                 .delete().await()
-            petInfoAdapter.deleteContact(position)
+            petInfoAdapter.deletePetInfo(position)
 
         }
 

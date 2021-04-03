@@ -11,7 +11,7 @@ import kotlinx.coroutines.tasks.await
 
 class MedicalViewModel : ViewModel() {
     lateinit var medicalAdapter: MedicalAdapter
-    val medicalInfo = MutableLiveData<List<MedicalInfo>>()
+    var medicalInfo = MutableLiveData<MutableList<MedicalInfo>>()
     private val db = Firebase.firestore
     private val _text = MutableLiveData<String>().apply {
         value = "This is pet info Fragment"
@@ -23,7 +23,7 @@ class MedicalViewModel : ViewModel() {
         }
     }
 
-    suspend fun getMedicalInfoForPet(petId: String): List<MedicalInfo> =
+    suspend fun getMedicalInfoForPet(petId: String): MutableList<MedicalInfo> =
         Firebase.firestore.collection("medicalInfo")
             .whereEqualTo("petId", petId)
             .get()
@@ -45,8 +45,7 @@ class MedicalViewModel : ViewModel() {
         medicalInfo.medicalId = medicalInfoRef.id
         medicalInfoRef.set(medicalInfo).await()
         medicalAdapter.addMedicalInfo(medicalInfo)
-
-
+        this.medicalInfo.value?.add(medicalInfo)
     }
 
     private suspend fun updateMedicalInfoToDb(medicalInfo: MedicalInfo) {
@@ -59,6 +58,7 @@ class MedicalViewModel : ViewModel() {
 
     fun deleteMedicalInfoFromDb(position: Int){
         var medicalInfo= medicalAdapter.result[position]
+        this.medicalInfo.value?.removeAt(position)
         viewModelScope.launch {
             Firebase.firestore.collection("medicalInfo")
                 .document(medicalInfo.medicalId)

@@ -152,7 +152,7 @@ class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface,
             .load(storage.reference.child(profileImageDownloadUrl))
             .centerCrop()
             .circleCrop()
-            .error(R.drawable.ic_baseline_close_24)
+            .error(R.drawable.ic_menu_camera_white)
             .into(profileImage);
     }
 
@@ -263,7 +263,7 @@ class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface,
                                 .load(selectedImage)
                                 .centerCrop()
                                 .circleCrop()
-                                .error(R.drawable.ic_baseline_close_24)
+                                .error(R.drawable.ic_menu_camera_white)
                                 .into(profileImage)
                         }.addOnFailureListener { e ->
                             Log.e("Help", e.localizedMessage.toString())
@@ -293,15 +293,14 @@ class MainActivity() : AppCompatActivity(), ContactsFragment.ContactInterface,
         }
 
     private fun setPetPicture(data: Intent?, url: String) {
-        var selectedImage: Uri? = data?.getData();
+        var selectedImage: Uri? = data?.data
         if (selectedImage != null) {
-            storage.reference.child(url).delete().addOnCompleteListener() {
+            storage.reference.child(url).delete().addOnCompleteListener {
                 storage.reference.child(url).putFile(selectedImage).addOnSuccessListener {
                     petInfoViewModel.petInfoAdapter.reloadImage(
                         petInfoViewModel.updateProfileIndex,
                         url
                     )
-
                 }
             }
         }

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -61,8 +62,11 @@ class ContactsFragment : Fragment() {
                     result.toMutableList(),
                     ::openEmail,
                     ::openPhone,
-                    ::openContactDialog
+                    ::openContactDialog,
+                    ::displayNoInfoToShowMessage,
+                    root
                 )
+            displayNoInfoToShowMessage(result,root)
             contacts_list.apply {
                 layoutManager = LinearLayoutManager(activity)
                 adapter = contactsViewModel.contactsAdapter
@@ -77,6 +81,17 @@ class ContactsFragment : Fragment() {
     private fun openContactDialog(contact: Contact = Contact() ){
         activity?.supportFragmentManager?.let {
             ContactDialogFragment(contact, contactsViewModel).show(it, "")
+        }
+    }
+    private fun displayNoInfoToShowMessage(
+        list: List<Contact>,
+        root: View
+    ) {
+        val message = root.findViewById<TextView>(R.id.no_items_message)
+        if (list.isNotEmpty()) {
+            message.visibility = View.GONE
+        }else{
+            message.visibility = View.VISIBLE
         }
     }
 

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.mheredia.petproject.R
 import com.mheredia.petproject.data.model.PetInfo
+import com.mheredia.petproject.data.model.Vaccine
 import com.mheredia.petproject.ui.petInfo.medical.MedicalHomeActivity
 import com.mheredia.petproject.ui.petInfo.vaccine.VaccineHomeActivity
 import com.mheredia.petproject.ui.utils.SwipeToDeleteCallback
@@ -58,8 +60,11 @@ class PetInfoFragment : Fragment() {
                     ::startMedicineActivity,
                     petInfoViewModel,
                     this.requireContext(),
-                    this.requireActivity()
+                    this.requireActivity(),
+                    this::displayNoInfoToShowMessage,
+                    root
                 )
+            displayNoInfoToShowMessage(result,root)
 
             pet_list.apply {
                 layoutManager = LinearLayoutManager(activity)
@@ -70,6 +75,17 @@ class PetInfoFragment : Fragment() {
             itemTouchHelper.attachToRecyclerView(pet_list)
         })
         return root
+    }
+    private fun displayNoInfoToShowMessage(
+        list: List<PetInfo>,
+        root: View
+    ) {
+        val message = root.findViewById<TextView>(R.id.no_items_message)
+        if (list.isNotEmpty()) {
+            message.visibility = View.GONE
+        }else{
+            message.visibility = View.VISIBLE
+        }
     }
 
     private fun openPetInfoDialog(petInfo: PetInfo = PetInfo() ){

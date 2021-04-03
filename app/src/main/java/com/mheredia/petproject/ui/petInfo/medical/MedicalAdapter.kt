@@ -8,17 +8,19 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.mheredia.petproject.R
 import com.mheredia.petproject.data.model.MedicalInfo
-import com.mheredia.petproject.data.model.Vaccine
+import kotlin.reflect.KFunction1
 
 class MedicalAdapter(
     var result: MutableList<MedicalInfo>,
-    var openDialog: (medicalInfo: MedicalInfo) -> Unit
+    var openDialog: (medicalInfo: MedicalInfo) -> Unit,
+    var noItemMessage: KFunction1<MutableList<MedicalInfo>, Unit>
 ) :
     RecyclerView.Adapter<MedicalAdapter.ViewHolder>() {
 
 
     fun addMedicalInfo(medicalInfo: MedicalInfo) {
         result.add(medicalInfo)
+        noItemMessage(result)
         notifyDataSetChanged()
     }
 
@@ -36,6 +38,7 @@ class MedicalAdapter(
 
     fun deleteMedicalInfo(index: Int) {
         result.removeAt(index)
+        noItemMessage(result)
         notifyDataSetChanged()
     }
 

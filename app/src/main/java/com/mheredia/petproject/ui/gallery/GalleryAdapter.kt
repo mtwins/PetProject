@@ -1,7 +1,6 @@
 package com.mheredia.petproject.ui.gallery
 
 import android.content.Context
-import android.graphics.Picture
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +19,6 @@ import com.google.firebase.storage.ktx.storage
 import com.mheredia.petproject.GlideApp
 import com.mheredia.petproject.MainActivity
 import com.mheredia.petproject.R
-import com.mheredia.petproject.data.model.Contact
 import com.mheredia.petproject.data.model.PetPicture
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -32,11 +30,14 @@ class GalleryAdapter(
     var context: Context,
     var viewModel: GalleryViewModel,
     var galleryFragment: FragmentActivity,
-    var openDialog: (petPicture: PetPicture) -> Unit
+    var openDialog: (petPicture: PetPicture) -> Unit,
+    var showNoItemMessage: (root: View, result: List<PetPicture>) -> Unit,
+    var root: View
 ) :
     RecyclerView.Adapter<GalleryAdapter.ViewHolder>() {
     fun addPicture(petPicture: PetPicture) {
         result.add(petPicture)
+        showNoItemMessage(root,result )
         notifyDataSetChanged()
     }
 
@@ -54,6 +55,7 @@ class GalleryAdapter(
 
     fun deletePicture(index: Int) {
         result.removeAt(index)
+        showNoItemMessage(root,result )
         notifyDataSetChanged()
     }
 

@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -39,7 +39,9 @@ class ReminderFragment : Fragment() {
         reminderViewModel.getReminders()
         val reminderList = root.findViewById<RecyclerView>(R.id.list_items)
         reminderViewModel.reminderInfo.observe(viewLifecycleOwner, Observer { result ->
-            reminderViewModel.reminderAdapter= ReminderAdapter(result.toMutableList(), ::openReminderDialog)
+            reminderViewModel.reminderAdapter= ReminderAdapter(result.toMutableList(),
+                ::openReminderDialog, ::displayNoInfoToShowMessage, root)
+            displayNoInfoToShowMessage(result, root)
             reminderList.apply {
                 layoutManager = LinearLayoutManager(activity)
                 adapter = reminderViewModel.reminderAdapter
@@ -66,6 +68,17 @@ class ReminderFragment : Fragment() {
         }
     }
 
+    private fun displayNoInfoToShowMessage(
+        list: List<Reminder>,
+        root: View
+    ) {
+        val message = root.findViewById<TextView>(R.id.no_items_message)
+        if (list.isNotEmpty()) {
+            message.visibility = View.GONE
+        }else{
+            message.visibility = View.VISIBLE
+        }
+    }
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         reminderViewModel = ViewModelProvider(this).get(ReminderViewModel::class.java)

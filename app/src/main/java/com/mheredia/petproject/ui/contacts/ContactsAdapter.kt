@@ -1,37 +1,29 @@
 package com.mheredia.petproject.ui.contacts
 
-import android.content.Context
-import android.content.Intent
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat.startActivity
-import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.mheredia.petproject.R
 import com.mheredia.petproject.data.model.Contact
-import com.mheredia.petproject.data.model.Reminder
-import com.mheredia.petproject.ui.reminders.ReminderAdapter
-import kotlinx.coroutines.tasks.await
 
 class ContactsAdapter(
     var result: MutableList<Contact>,
     var openEmail: (email: String) -> Unit,
     var openPhone: (phone: String) -> Unit,
-    var openDialog: (contact: Contact) -> Unit
+    var openDialog: (contact: Contact) -> Unit,
+    var noItemsMessage: (list: List<Contact>, root: View) -> Unit,
+    var root: View
 ) :
     RecyclerView.Adapter<ContactsAdapter.ViewHolder>() {
 
     fun addContact(contact: Contact) {
         result.add(contact)
+        noItemsMessage(result, root)
         notifyDataSetChanged()
     }
 
@@ -49,6 +41,7 @@ class ContactsAdapter(
 
     fun deleteContact(index: Int) {
         result.removeAt(index)
+        noItemsMessage(result, root)
         notifyDataSetChanged()
     }
 

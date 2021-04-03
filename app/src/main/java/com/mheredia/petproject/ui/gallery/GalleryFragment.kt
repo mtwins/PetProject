@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
@@ -58,8 +59,11 @@ class GalleryFragment : Fragment() {
                     requireContext(),
                     galleryViewModel,
                     this.requireActivity(),
-                    this::openGalleryDialog
+                    this::openGalleryDialog,
+                    ::showNoItemsMessage,
+                    root
                 )
+            showNoItemsMessage(root, result)
             pet_pictures_list.apply {
                 layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
                 adapter = galleryViewModel.galleryAdapter
@@ -69,6 +73,18 @@ class GalleryFragment : Fragment() {
             itemTouchHelper.attachToRecyclerView(pet_pictures_list)
         })
         return root
+    }
+
+    private fun showNoItemsMessage(
+        root: View,
+        result: List<PetPicture>
+    ) {
+        val message = root.findViewById<TextView>(R.id.no_items_message)
+        if (result.isNotEmpty()) {
+            message.visibility = View.GONE
+        } else {
+            message.visibility = View.VISIBLE
+        }
     }
 
     private fun openGalleryDialog(picture: PetPicture= PetPicture()) {

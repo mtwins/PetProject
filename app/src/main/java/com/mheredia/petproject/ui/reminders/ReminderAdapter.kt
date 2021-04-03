@@ -5,23 +5,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.mheredia.petproject.R
 import com.mheredia.petproject.data.model.Reminder
 
 class ReminderAdapter(
     var result: MutableList<Reminder>,
-    var openDialog: (reminder: Reminder) -> Unit
+    var openDialog: (reminder: Reminder) -> Unit,
+    var displayNoInfoToShow: (list: List<Reminder>, root: View) -> Unit,
+    var root: View
 
 ) :
     RecyclerView.Adapter<ReminderAdapter.ViewHolder>() {
 
     fun addReminder(reminder: Reminder) {
         result.add(reminder)
+        displayNoInfoToShow(result, root)
         notifyDataSetChanged()
     }
 
@@ -39,6 +40,7 @@ class ReminderAdapter(
 
     fun deleteReminder(position: Int) {
         result.removeAt(position)
+        displayNoInfoToShow(result, root)
         notifyDataSetChanged()
     }
 

@@ -16,6 +16,7 @@ import com.google.firebase.ktx.Firebase
 import com.mheredia.petproject.GlideApp
 import com.mheredia.petproject.MainActivity
 import com.mheredia.petproject.R
+import com.mheredia.petproject.data.model.Contact
 import com.mheredia.petproject.data.model.PetInfo
 
 class PetInfoAdapter(
@@ -26,14 +27,16 @@ class PetInfoAdapter(
     var openMedicineInfo: (petId: String) -> Unit,
     var viewModel: PetInfoViewModel,
     var context: Context,
-    var petInfoFragment: FragmentActivity
-
+    var petInfoFragment: FragmentActivity,
+    var noItemsMessage: (list: List<PetInfo>, root: View) -> Unit,
+    var root: View
     ) :
     RecyclerView.Adapter<PetInfoAdapter.ViewHolder>() {
 
 
     fun addPet(petInfo: PetInfo) {
         result.add(petInfo)
+        noItemsMessage(result,root)
         notifyDataSetChanged()
     }
 
@@ -49,8 +52,9 @@ class PetInfoAdapter(
         notifyDataSetChanged()
     }
 
-    fun deleteContact(index: Int) {
+    fun deletePetInfo(index: Int) {
         result.removeAt(index)
+        noItemsMessage(result,root)
         notifyDataSetChanged()
     }
 
@@ -102,6 +106,7 @@ class PetInfoAdapter(
             .document(result[index].petId)
             .set(result[index]).addOnSuccessListener{
                 notifyItemChanged(index)
+                notifyDataSetChanged()
             }
     }
 

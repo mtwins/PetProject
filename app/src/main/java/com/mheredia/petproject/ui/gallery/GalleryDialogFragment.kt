@@ -113,7 +113,7 @@ class GalleryDialogFragment(
     fun updatePicture(uri: Uri) {
         GlideApp.with(this)
             .load(uri)
-            .error(R.drawable.ic_baseline_close_24)
+            .error(R.drawable.ic_launcher_foreground)
             .into(petPictureImage);
     }
 
