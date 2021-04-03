@@ -27,7 +27,8 @@ class ViewVaccineFragment(var petId: String) : Fragment() {
             vaccineViewModel.vaccineAdapter =
                 VaccineAdapter(
                     result.toMutableList(),
-                    this::openDialog
+                    this::openDialog,
+                    root
                 )
             displayNoVaccinesToShowMessage(result, root)
             vaccine_list.apply {
@@ -46,7 +47,7 @@ class ViewVaccineFragment(var petId: String) : Fragment() {
         root: View
     ) {
         if (vaccine_list.isNotEmpty()) {
-            var vaccineMessage = root.findViewById<TextView>(R.id.no_vaccine_message)
+            val vaccineMessage = root.findViewById<TextView>(R.id.no_vaccine_message)
             vaccineMessage.visibility = View.GONE
         }
     }

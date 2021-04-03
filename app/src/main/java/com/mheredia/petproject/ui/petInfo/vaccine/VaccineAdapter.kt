@@ -5,22 +5,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import com.mheredia.petproject.GlideApp
-import com.mheredia.petproject.MainActivity
 import com.mheredia.petproject.R
-import com.mheredia.petproject.data.model.PetInfo
 import com.mheredia.petproject.data.model.Vaccine
-import kotlinx.coroutines.tasks.await
 
 class VaccineAdapter(
     var result: MutableList<Vaccine>,
-    var openDialog: (vaccine: Vaccine) -> Unit
+    var openDialog: (vaccine: Vaccine) -> Unit,
+    var root: View
 ) :
     RecyclerView.Adapter<VaccineAdapter.ViewHolder>() {
 
@@ -28,6 +20,10 @@ class VaccineAdapter(
     fun addVaccine(vaccineInfo: Vaccine) {
         result.add(vaccineInfo)
         notifyDataSetChanged()
+        if(result.size>0) {
+            val vaccineMessage = root.findViewById<TextView>(R.id.no_vaccine_message)
+            vaccineMessage.visibility = View.GONE
+        }
     }
 
     fun editVaccine(vaccineInfo: Vaccine) {
@@ -45,6 +41,10 @@ class VaccineAdapter(
     fun deleteContact(index: Int) {
         result.removeAt(index)
         notifyDataSetChanged()
+        if(result.size==0) {
+            val vaccineMessage = root.findViewById<TextView>(R.id.no_vaccine_message)
+            vaccineMessage.visibility = View.VISIBLE
+        }
     }
 
 
