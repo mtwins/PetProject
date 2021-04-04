@@ -11,6 +11,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.mheredia.petproject.data.model.Reminder
 import com.mheredia.petproject.ui.contacts.ContactsFragment
+import com.mheredia.petproject.ui.utils.NotificationUtils
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.*

@@ -77,7 +77,7 @@ class ReminderDialogFragment(
                 calender.set(Calendar.MONTH, month)
                 calender.set(Calendar.DAY_OF_MONTH, day)
                 calender.set(Calendar.YEAR, year)
-                dateTextBox.setText("$month/$day/$year")
+                dateTextBox.setText("${month+1}/$day/$year")
             }
             datePickerDialog.show()
         }
